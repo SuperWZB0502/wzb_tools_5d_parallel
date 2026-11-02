@@ -16,10 +16,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    assert.ok(Number(await line.getAttribute('y2'))-Number(await line.getAttribute('y1'))>=130);
    await page.locator('#scheduleBoundaries').uncheck();assert.equal(await page.locator('[data-schedule-region]').count(),0);await page.locator('#scheduleBoundaries').check();
   });
-  await check('PP layers are table cells and forward/backward share green hue',async()=>{
+  await check('PP layers are table cells and forward/backward share a soft yellow hue',async()=>{
    const table=page.locator('[data-schedule-table]');assert.match(await table.textContent(),/PP stage/);assert.match(await table.textContent(),/层分布/);
    assert.equal(await page.locator('[data-schedule-layer="0:0"]').textContent(),'2');assert.match(await page.locator('.schedule-stage-label[data-stage="0"]').textContent(),/总层数 2 层/);
-   assert.equal(await task(0,'fwd').locator('rect').getAttribute('fill'),'#d5efdc');assert.equal(await task(0,'bwd').locator('rect').getAttribute('fill'),'#278650');
+   assert.equal(await task(0,'fwd').locator('rect').getAttribute('fill'),'#fff0b9');assert.equal(await task(0,'bwd').locator('rect').getAttribute('fill'),'#ffe08a');
   });
   await check('eight stages fit fully and VPP uses split table headers and yellow/blue pairs',async()=>{
    await page.locator('#total').fill('64');await page.locator('#layers').fill('16');await page.locator('#pp').fill('8');await wait();
@@ -31,7 +31,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    assert.deepEqual(await page.locator('[data-schedule-chunk-heading]').allTextContents(),['VPP 0','VPP 1']);
    assert.equal(await page.locator('[data-schedule-layer="0:0"]').textContent(),'1');assert.equal(await page.locator('[data-schedule-layer="0:1"]').textContent(),'1');
    const exported=await page.evaluate(()=>PPScheduler.exportSvg());
-   for(const [chunk,f,b] of [[0,'#fff0b9','#f4c542'],[1,'#dcedff','#4a9ee8']]){
+   for(const [chunk,f,b] of [[0,'#fff0b9','#ffe08a'],[1,'#dcedff','#b6d9f7']]){
     const colors=await page.evaluate(({text,chunk})=>{const d=new DOMParser().parseFromString(text,'image/svg+xml');return ['fwd','bwd'].map(p=>d.querySelector(`.schedule-task[data-stage="0"][data-phase="${p}"][data-chunk="${chunk}"] rect`).getAttribute('fill'))},{text:exported,chunk});assert.deepEqual(colors,[f,b]);
    }
   });
