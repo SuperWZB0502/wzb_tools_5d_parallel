@@ -12,7 +12,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    assert.deepEqual(await page.locator('[data-view]').allTextContents(),['权重切分图','通信组表','PP 调度图']);
    await page.locator('[data-view="schedule"]').click();assert.equal(await page.locator('#scheduleMbn').innerText(),'8');
    assert.equal(await page.locator('#schedulePp').innerText(),'2');assert.equal(await page.locator('#scheduleDp').innerText(),'2');
-   assert.equal(await page.locator('#scheduleDuration').innerText(),'18');assert.equal(await page.locator('#scheduleBoard').isVisible(),true);
+   assert.equal(await page.locator('#scheduleDuration').innerText(),'54');assert.equal(await page.locator('#scheduleBoard').isVisible(),true);
    assert.ok((await page.locator('#scheduleBoard').boundingBox()).height<240,'small pipelines should not leave a large empty chart');
    assert.equal(await page.locator('.toolbar').isVisible(),false);assert.equal(await page.locator('.detail').isVisible(),false);
    await page.locator('[data-view="diagram"]').click();
@@ -34,7 +34,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
   await check('modes change backward order and activation occupancy, and tasks can be selected',async()=>{
    await page.locator('#scheduleMode').selectOption('gpipe');assert.equal(await page.locator('#schedulePeak').innerText(),'16');
    const backward=page.locator('.schedule-task[data-stage="0"][data-phase="bwd"]');
-   await page.locator('#scheduleBoard').evaluate(e=>e.scrollLeft=e.scrollWidth);await page.waitForTimeout(50);
+   await page.locator('#scheduleBoard').evaluate(e=>e.scrollLeft=25*52);await page.waitForTimeout(50);
    assert.ok((await backward.first().getAttribute('aria-label')).includes('微批 16'));
    await page.locator('#scheduleMode').selectOption('1f1b');assert.equal(await page.locator('#schedulePeak').innerText(),'4');
    const task=page.locator('.schedule-task[data-stage="0"][data-microbatch="0"]').first();await task.click();
@@ -44,7 +44,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
   await check('configuration and schedule SVG exports preserve schedule settings and all tasks',async()=>{
    await page.locator('#scheduleGbs').fill('16');await page.locator('#scheduleMbs').fill('2');await page.locator('#scheduleMode').selectOption('gpipe');
    const [configDownload]=await Promise.all([page.waitForEvent('download'),page.locator('#exportBtn').click()]);
-   const config=JSON.parse(fs.readFileSync(await configDownload.path(),'utf8'));assert.deepEqual(config.schedule,{gbs:16,mbs:2,mode:'gpipe'});
+   const config=JSON.parse(fs.readFileSync(await configDownload.path(),'utf8'));assert.deepEqual(config.schedule,{gbs:16,mbs:2,mode:'gpipe',backwardRatio:2,vpp:1,showBoundaries:true});
    const [svgDownload]=await Promise.all([page.waitForEvent('download'),page.locator('#saveSvg').click()]);
    const svg=fs.readFileSync(await svgDownload.path(),'utf8');assert.match(svg,/PP 调度图/);assert.equal((svg.match(/data-schedule-event=/g)||[]).length,32);
    await page.locator('#scheduleGbs').fill('32');await page.locator('#fileInput').setInputFiles({name:'config.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(config))});await wait();

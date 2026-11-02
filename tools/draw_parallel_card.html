@@ -21,7 +21,8 @@
 @media(min-width:1700px){.app{--config-width:285px;--detail-width:335px;grid-template-columns:var(--config-width) minmax(600px,1fr) var(--detail-width)}}
 @media(max-width:1150px){.app{--config-width:248px;grid-template-columns:var(--config-width) minmax(360px,1fr)}.app.right-collapsed .detail{min-height:40px}.app.right-collapsed .detail .panel-toggle{right:7px}}
 @media(max-width:720px){.app{display:block}.app.left-collapsed .config{height:40px}.app.left-collapsed .config .panel-toggle{right:7px}.comm-tooltip{width:330px}.workspace:fullscreen .toolbar,.workspace.is-fullscreen .toolbar{padding:5px 9px}.workspace:fullscreen .summary-line,.workspace.is-fullscreen .summary-line{display:none}.workspace:fullscreen .results-head,.workspace.is-fullscreen .results-head{padding-top:0}.workspace:fullscreen .board-hint,.workspace.is-fullscreen .board-hint{max-height:50px}}
-.app.schedule-mode,.app.schedule-mode.right-collapsed{grid-template-columns:268px minmax(360px,1fr)}.app.schedule-mode.left-collapsed,.app.schedule-mode.left-collapsed.right-collapsed{grid-template-columns:36px minmax(360px,1fr)}.app.schedule-mode .detail{display:none}.schedule-view{flex:1;min-width:0;padding:22px;background:#f3f7fa}.schedule-intro{display:flex;gap:18px;align-items:baseline;justify-content:space-between;margin-bottom:18px}.schedule-intro h2{font-size:18px}.schedule-intro p{font-size:12px;color:var(--muted);line-height:1.7}.schedule-form{display:grid;grid-template-columns:minmax(130px,1fr) minmax(130px,1fr) minmax(200px,1.25fr) auto;gap:16px;align-items:end}.schedule-form label{display:block;font-size:12px;color:#435b6f}.schedule-form label small{display:block;font-size:10px;margin:3px 0 7px}.schedule-form input,.schedule-form select{background:white;font-size:14px}.schedule-context{display:flex;gap:15px;align-items:center;min-height:36px;font-size:12px;color:var(--muted);white-space:nowrap}.schedule-context b{font:600 17px var(--mono);color:var(--ink);margin-left:4px}.schedule-formula{font-size:11px;color:var(--muted);line-height:1.8;margin:11px 0 0}.schedule-formula code{font:12px var(--mono);color:var(--accent)}.schedule-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:20px 0;background:#fff;border:1px solid var(--line);border-radius:6px}.schedule-stat{padding:14px 18px;border-right:1px solid var(--line)}.schedule-stat:last-child{border:0}.schedule-stat span{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.schedule-stat strong{font:600 25px var(--mono);color:var(--ink)}.schedule-stat:first-child strong{color:var(--accent)}.schedule-shell{border:1px solid #cfdee8;border-radius:7px;background:white;overflow:hidden}.schedule-controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line)}.schedule-legend{display:flex;gap:16px;font-size:11px;color:var(--muted)}.schedule-legend span{display:inline-flex;gap:6px;align-items:center}.schedule-legend i{width:16px;height:12px;border:1px solid #187f96;border-radius:3px;background:#d8edf1}.schedule-legend .backward i{background:#fff0d7;border-color:#d08a25}.schedule-legend .idle i{background:#eef3f7;border-color:#dce5ed}.schedule-zoom{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}.schedule-zoom button{font-size:12px;padding:3px 8px;min-height:28px}.schedule-board{height:440px;max-height:65vh;min-height:180px;overflow:auto;position:relative;background:#fbfcfd;overscroll-behavior:contain;touch-action:pan-x pan-y}.schedule-board svg{display:block;user-select:none}.schedule-task{cursor:pointer;outline:none}.schedule-task:focus-visible rect{stroke:#163047;stroke-width:3}.schedule-selection{min-height:45px;padding:11px 15px;font-size:12px;color:var(--muted);background:#fff;border-top:1px solid var(--line);line-height:1.8}.schedule-selection[data-pinned=true]{color:var(--ink)}.schedule-note{font-size:11px;color:var(--muted);line-height:1.9;margin-top:13px}.schedule-error{padding:18px;color:#a42c43;background:#fff4f6;border:1px solid #efd0d7;border-radius:5px;line-height:1.8;font-size:13px;margin:18px 0}.schedule-model-note{margin-top:9px;font-size:11px;color:var(--muted)}
+.app.schedule-mode,.app.schedule-mode.right-collapsed{grid-template-columns:268px minmax(360px,1fr)}.app.schedule-mode.left-collapsed,.app.schedule-mode.left-collapsed.right-collapsed{grid-template-columns:36px minmax(360px,1fr)}.app.schedule-mode .detail{display:none}.schedule-view{flex:1;min-width:0;padding:22px;background:#f3f7fa}.schedule-intro{display:flex;gap:18px;align-items:baseline;justify-content:space-between;margin-bottom:18px}.schedule-intro h2{font-size:18px}.schedule-intro p{font-size:12px;color:var(--muted);line-height:1.7}.schedule-form{display:grid;grid-template-columns:minmax(100px,1fr) minmax(100px,1fr) minmax(190px,1.6fr) minmax(150px,1.3fr) auto;gap:16px;align-items:end}.schedule-form label{display:block;font-size:12px;color:#435b6f}.schedule-form label small{display:block;font-size:10px;margin:3px 0 7px}.schedule-form input,.schedule-form select{background:white;font-size:14px}.schedule-context{display:flex;gap:15px;align-items:center;min-height:36px;font-size:12px;color:var(--muted);white-space:nowrap}.schedule-context b{font:600 17px var(--mono);color:var(--ink);margin-left:4px}.schedule-formula{font-size:11px;color:var(--muted);line-height:1.8;margin:11px 0 0}.schedule-formula code{font:12px var(--mono);color:var(--accent)}.schedule-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:20px 0;background:#fff;border:1px solid var(--line);border-radius:6px}.schedule-stat{padding:14px 18px;border-right:1px solid var(--line)}.schedule-stat:last-child{border:0}.schedule-stat span{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.schedule-stat strong{font:600 25px var(--mono);color:var(--ink)}.schedule-stat:first-child strong{color:var(--accent)}.schedule-shell{border:1px solid #cfdee8;border-radius:7px;background:white;overflow:hidden}.schedule-controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line)}.schedule-legend{display:flex;gap:16px;font-size:11px;color:var(--muted)}.schedule-legend span{display:inline-flex;gap:6px;align-items:center}.schedule-legend i{width:16px;height:12px;border:1px solid #187f96;border-radius:3px;background:#d8edf1}.schedule-legend .backward i{background:#fff0d7;border-color:#d08a25}.schedule-legend .idle i{background:#eef3f7;border-color:#dce5ed}.schedule-zoom{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}.schedule-zoom button{font-size:12px;padding:3px 8px;min-height:28px}.schedule-board{height:440px;max-height:65vh;min-height:180px;overflow:auto;position:relative;background:#fbfcfd;overscroll-behavior:contain;touch-action:pan-x pan-y}.schedule-board svg{display:block;user-select:none}.schedule-task{cursor:pointer;outline:none}.schedule-task:focus-visible rect{stroke:#163047;stroke-width:3}.schedule-selection{min-height:45px;padding:11px 15px;font-size:12px;color:var(--muted);background:#fff;border-top:1px solid var(--line);line-height:1.8}.schedule-selection[data-pinned=true]{color:var(--ink)}.schedule-note{font-size:11px;color:var(--muted);line-height:1.9;margin-top:13px}.schedule-error{padding:18px;color:#a42c43;background:#fff4f6;border:1px solid #efd0d7;border-radius:5px;line-height:1.8;font-size:13px;margin:18px 0}.schedule-model-note{margin-top:9px;font-size:11px;color:var(--muted)}
+.schedule-features{display:flex;align-items:center;flex-wrap:wrap;gap:12px 22px;margin-top:16px;font-size:12px;color:#435b6f}.schedule-features label{display:inline-flex;align-items:center;gap:7px}.schedule-features input[type=checkbox]{width:15px;height:15px;margin:0;accent-color:var(--accent)}.schedule-features input[type=number]{width:70px;background:white}.schedule-features input:disabled{opacity:.45}.schedule-legend{flex-wrap:wrap}
 @media(max-width:1100px){.schedule-form{grid-template-columns:1fr 1fr}.schedule-intro{display:block}.schedule-intro p{margin-top:7px}.schedule-context{justify-content:flex-end}.schedule-stats strong{font-size:22px}}
 @media(max-width:720px){.schedule-view{padding:18px 12px}.schedule-form{gap:12px}.schedule-stats{grid-template-columns:1fr 1fr}.schedule-stat{padding:12px}.schedule-stat:nth-child(2){border-right:0}.schedule-stat:nth-child(-n+2){border-bottom:1px solid var(--line)}.schedule-stat:nth-child(3){border-right:1px solid var(--line)}.schedule-legend{gap:10px}.schedule-board{height:390px}.schedule-controls{padding:10px;gap:10px}}
 </style>
@@ -51,15 +52,18 @@
 <div class="schedule-form">
 <label for="scheduleGbs">GBS<small>全局批量大小</small><input id="scheduleGbs" type="number" min="1" step="1" value="32" inputmode="numeric"></label>
 <label for="scheduleMbs">MBS<small>单个微批量大小</small><input id="scheduleMbs" type="number" min="1" step="1" value="2" inputmode="numeric"></label>
-<label for="scheduleMode">调度方式<small>同步流水线，无交错</small><select id="scheduleMode"><option value="1f1b">1F1B · 前向与反向交替</option><option value="gpipe">GPipe · 全部前向后反向</option></select></label>
+<label for="scheduleMode">调度方式<small>同步流水线调度</small><select id="scheduleMode"><option value="1f1b">1F1B · 前向与反向交替</option><option value="gpipe">GPipe · 全部前向后反向</option></select></label>
+<label for="scheduleBackwardRatio">反向耗时倍数<small>每层前向 = 1，默认反向 = 2</small><input id="scheduleBackwardRatio" type="number" min="0.1" max="100" step="0.1" value="2"></label>
 <div class="schedule-context"><span>PP <b id="schedulePp">—</b></span><span>DP <b id="scheduleDp">—</b></span></div>
 </div>
+<div class="schedule-features"><label><input id="scheduleVppEnabled" type="checkbox">启用 VPP · 交错 1F1B</label><label for="scheduleVpp">每个 stage 的 chunk 数 <input id="scheduleVpp" type="number" min="2" step="1" value="2" disabled></label><label><input id="scheduleBoundaries" type="checkbox" checked>显示 warmup / 1F1B / cooldown 分界</label></div>
+<p id="scheduleVppNote" class="schedule-model-note">VPP 将每个物理 stage 拆为多个 chunk，按层数尽量均分，余数放在后面的 chunk。</p>
 <p class="schedule-formula">微批次数 <code>MBN = GBS ÷ (MBS × DP)</code><span id="scheduleFormula"></span>。PP、DP 沿用左侧配置。</p>
 <div id="scheduleStats" class="schedule-stats" aria-live="polite">
 <div class="schedule-stat"><span>MBN · 微批次数</span><strong id="scheduleMbn">—</strong></div>
 <div class="schedule-stat"><span>总时间步</span><strong id="scheduleDuration">—</strong></div>
 <div class="schedule-stat"><span>空闲比例</span><strong id="scheduleBubble">—</strong></div>
-<div class="schedule-stat"><span>峰值未回传微批数</span><strong id="schedulePeak">—</strong></div>
+<div class="schedule-stat"><span>峰值待反向块</span><strong id="schedulePeak">—</strong></div>
 </div>
 <div id="scheduleError" class="schedule-error" role="alert" hidden></div>
 <div class="schedule-shell">
@@ -67,8 +71,8 @@
 <div id="scheduleBoard" class="schedule-board" tabindex="0" aria-label="PP 调度时间轴，可横向或纵向滚动"><svg id="scheduleSvg" xmlns="http://www.w3.org/2000/svg" font-family="Consolas,Microsoft YaHei,sans-serif" role="img" aria-label="PP 流水线调度"></svg></div>
 <div id="scheduleSelection" class="schedule-selection" aria-live="polite" data-pinned="false">悬停查看微批详情；单击可高亮该微批的全部前向与反向，单击空白取消。</div>
 </div>
-<p class="schedule-note">横轴为相对时间步，纵轴为 PP stage；F / B 后的数字是从 1 开始的微批编号。每个 stage 串行执行，后续任务等待前向激活或反向梯度就绪。</p>
-<p class="schedule-model-note">等时示意：各 stage 的 F、B 均占 1 步，不计通信、重计算及层数差异。空闲比例与未回传微批数用于比较调度结构，不代表实际性能或显存用量。支持 PP × MBN ≤ 65,536。</p>
+<p class="schedule-note">横轴为相对时间，纵轴为物理 PP stage；F / B 后为从 1 开始的微批编号，C0、C1 为虚拟 chunk。每个 stage 的所有 chunk 共用计算资源，串行执行。分界线按各 stage 的实际阶段分别绘制。</p>
+<p class="schedule-model-note">按层等时：每层前向 = 1，反向默认 = 2；沿用左侧各 stage 层数。不计通信、重计算及层类型差异。待反向块按微批 × chunk 计数，不代表实际显存。支持 PP × VPP × MBN ≤ 65,536。</p>
 </section><div id="commTooltip" class="comm-tooltip" role="dialog" aria-label="详细通信信息" data-pinned="false" hidden><div class="comm-tooltip-head"><strong id="commTooltipTitle"></strong><button id="closeCommTooltip" aria-label="关闭通信浮窗" title="关闭通信浮窗">×</button></div><div id="commTooltipContent" class="comm-tooltip-content"></div><div id="commTooltipStatus" class="comm-tooltip-status"></div></div>
 </section>
 <aside class="detail" aria-label="模块详情"><button id="toggleDetail" class="panel-toggle" aria-label="收起模块与通信" aria-expanded="true" aria-controls="detailPanel" title="收起模块与通信"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="detailPanel" class="panel-body"><div class="detail-head"><h2>模块与通信</h2><button id="unpin" hidden>取消固定</button></div><div id="detailBody" class="detail-body"></div></div></aside>
@@ -278,109 +282,149 @@ var XYModel=(()=>{
 'use strict';
 var XYPipeline=(()=>{
  const MAX_CELLS=65536;
- const integer=value=>(typeof value==='number'||typeof value==='string')&&String(value).trim()!==''?Number(value):NaN;
- function validateBatch(raw={}){
-  const config={},errors=[];
-  for(const [key,label] of [['gbs','GBS'],['mbs','MBS'],['dp','DP'],['pp','PP']]){config[key]=integer(raw[key]);if(!Number.isSafeInteger(config[key])||config[key]<1)errors.push(label+' 必须为正的安全整数');}
-  config.mode=raw.mode??'1f1b';if(!['1f1b','gpipe'].includes(config.mode))errors.push('请选择 1F1B 或 GPipe 调度');
+ const number=value=>(typeof value==='number'||typeof value==='string')&&String(value).trim()!==''?Number(value):NaN;
+ function normalize(raw={}){
+  const config={pp:number(raw.pp),mbn:number(raw.mbn),vpp:number(raw.vpp??1),mode:raw.mode??'1f1b',backwardRatio:number(raw.backwardRatio??2)},errors=[];
+  for(const [key,label] of [['pp','PP'],['mbn','MBN'],['vpp','VPP']])if(!Number.isSafeInteger(config[key])||config[key]<1)errors.push(label+' 必须为正的安全整数');
   if(config.pp>4096)errors.push('PP size 不能超过 4096');
-  if(!errors.length){const denominator=config.mbs*config.dp;if(!Number.isSafeInteger(denominator))errors.push('MBS × DP 超过安全整数范围');else if(config.gbs%denominator!==0)errors.push('GBS 必须能被 MBS × DP 整除，不能取整生成微批次');else{config.mbn=config.gbs/denominator;if(config.mbn*config.pp>MAX_CELLS)errors.push('PP × MBN 不能超过 65,536，请减小批量或 PP size');}}
-  return {ok:errors.length===0,config,errors};
+  if(!['1f1b','gpipe'].includes(config.mode))errors.push('请选择 1F1B 或 GPipe 调度');
+  if(!Number.isFinite(config.backwardRatio)||config.backwardRatio<.1||config.backwardRatio>100)errors.push('反向耗时倍数应在 0.1 到 100 之间');
+  if(raw.showBoundaries!==undefined&&typeof raw.showBoundaries!=='boolean')errors.push('阶段分界开关必须为布尔值');
+  config.showBoundaries=raw.showBoundaries??true;
+  if(errors.length)return {ok:false,config,errors};
+  if(config.pp*config.mbn*config.vpp>MAX_CELLS)errors.push('PP × VPP × MBN 不能超过 65,536，请减小配置');
+  if(raw.layerCounts==null)config.layerCounts=Array(config.pp).fill(1);
+  else if(!Array.isArray(raw.layerCounts)||raw.layerCounts.length!==config.pp)errors.push('各 stage 的层数必须与 PP size 一致');
+  else config.layerCounts=raw.layerCounts.map(number);
+  if(config.layerCounts?.some(n=>!Number.isSafeInteger(n)||n<1))errors.push('每个 stage 的层数必须为正的安全整数');
+  if(config.vpp>1){
+   if(config.pp<2)errors.push('交错 VPP 需要至少 2 个物理 PP stage');
+   if(config.mode!=='1f1b')errors.push('VPP 使用交错 1F1B，请切换调度方式或关闭 VPP');
+   if(config.mbn%config.pp!==0)errors.push('当前 VPP 按 PP size 分组，MBN 必须能被 PP size 整除');
+   const short=config.layerCounts?.findIndex(n=>n<config.vpp);if(short>=0)errors.push('PP stage '+short+' 只有 '+config.layerCounts[short]+' 层，无法拆成 '+config.vpp+' 个非空 chunk');
+  }
+  config.totalLayers=config.layerCounts?.reduce((sum,n)=>sum+n,0);
+  if(config.layerCounts&&(!Number.isSafeInteger(config.totalLayers)||config.totalLayers*config.mbn*(1+config.backwardRatio)>Number.MAX_SAFE_INTEGER/8))errors.push('层数和批量产生的总耗时超过安全计算范围');
+  if(errors.length)return {ok:false,config,errors};
+  config.chunkLayers=config.layerCounts.map(n=>{const small=Math.floor(n/config.vpp),extra=n%config.vpp;return Array.from({length:config.vpp},(_,c)=>small+(c>=config.vpp-extra?1:0));});
+  return {ok:true,config,errors};
  }
- function buildSchedule({pp,mbn,mode='1f1b'}){
-  if(!Number.isSafeInteger(pp)||pp<1||pp>4096||!Number.isSafeInteger(mbn)||mbn<1||!['1f1b','gpipe'].includes(mode))throw new RangeError('调度参数无效');
-  if(pp*mbn>MAX_CELLS)throw new RangeError('PP × MBN 不能超过 65,536');
-  const count=2*pp*mbn,events=new Array(count),stages=Array.from({length:pp},()=>[]),successors=Array.from({length:count},()=>[]),pending=new Uint8Array(count);
-  const id=(s,m,phase)=>(s*mbn+m)*2+(phase==='bwd'?1:0);
+ function validateBatch(raw={}){
+  const batch={},errors=[];
+  for(const [key,label] of [['gbs','GBS'],['mbs','MBS'],['dp','DP']]){batch[key]=number(raw[key]);if(!Number.isSafeInteger(batch[key])||batch[key]<1)errors.push(label+' 必须为正的安全整数');}
+  if(!errors.length){const denominator=batch.mbs*batch.dp;if(!Number.isSafeInteger(denominator))errors.push('MBS × DP 超过安全整数范围');else if(batch.gbs%denominator!==0)errors.push('GBS 必须能被 MBS × DP 整除，不能取整生成微批次');else batch.mbn=batch.gbs/denominator;}
+  if(errors.length)return {ok:false,config:batch,errors};
+  const result=normalize({...raw,mbn:batch.mbn});return {...result,config:{...result.config,...batch}};
+ }
+ function buildSchedule(raw){
+  const validation=normalize(raw);if(!validation.ok)throw new RangeError(validation.errors.join('；'));
+  const {pp,mbn,vpp,mode,backwardRatio,layerCounts,chunkLayers,totalLayers}=validation.config,count=2*pp*mbn*vpp,events=new Array(count),stages=Array.from({length:pp},()=>[]),successors=Array.from({length:count},()=>[]),pending=new Uint8Array(count);
+  const id=(s,c,m,phase)=>((s*vpp+c)*mbn+m)*2+(phase==='bwd'?1:0),table=[];
+  if(vpp>1)for(let base=0;base<mbn;base+=pp)for(let c=0;c<vpp;c++)for(let m=base;m<base+pp;m++)table.push({microbatch:m,chunk:c});
   for(let s=0;s<pp;s++){
-   const order=stages[s],push=(m,phase)=>{const task={id:id(s,m,phase),stage:s,microbatch:m,phase,start:0,end:0};events[task.id]=task;order.push(task);};
-   if(mode==='gpipe'){for(let m=0;m<mbn;m++)push(m,'fwd');for(let m=mbn-1;m>=0;m--)push(m,'bwd');}
-   else{const warmup=Math.min(pp-s-1,mbn),remaining=mbn-warmup;for(let m=0;m<warmup;m++)push(m,'fwd');for(let m=0;m<remaining;m++){push(warmup+m,'fwd');push(m,'bwd');}for(let m=remaining;m<mbn;m++)push(m,'bwd');}
-   for(let i=0;i<order.length;i++){
-    const task=order[i],deps=new Set(i?[order[i-1].id]:[]);
-    if(task.phase==='fwd'&&s>0)deps.add(id(s-1,task.microbatch,'fwd'));
-    if(task.phase==='bwd'){deps.add(id(s,task.microbatch,'fwd'));if(s<pp-1)deps.add(id(s+1,task.microbatch,'bwd'));}
+   const row=stages[s],push=(m,c,phase,segment)=>{const layers=chunkLayers[s][c],task={id:id(s,c,m,phase),stage:s,chunk:c,microbatch:m,phase,segment,layers,cost:layers*(phase==='bwd'?backwardRatio:1),start:0,end:0};events[task.id]=task;row.push(task);};
+   if(mode==='gpipe'){for(let m=0;m<mbn;m++)push(m,0,'fwd','forward');for(let m=mbn-1;m>=0;m--)push(m,0,'bwd','backward');}
+   else{
+    const total=mbn*vpp,warmup=Math.min(vpp>1?(pp-s-1)*2+(vpp-1)*pp:pp-s-1,total),remaining=total-warmup;
+    const forward=(i,segment)=>{const item=vpp>1?table[i]:{microbatch:i,chunk:0};push(item.microbatch,item.chunk,'fwd',segment);};
+    const backward=(i,segment)=>{const item=vpp>1?table[i]:{microbatch:i,chunk:0};push(item.microbatch,vpp-1-item.chunk,'bwd',segment);};
+    for(let i=0;i<warmup;i++)forward(i,'warmup');for(let i=0;i<remaining;i++){forward(warmup+i,'steady');backward(i,'steady');}for(let i=remaining;i<total;i++)backward(i,'cooldown');
+   }
+   for(let i=0;i<row.length;i++){
+    const task=row[i],deps=new Set(i?[row[i-1].id]:[]),c=task.chunk,m=task.microbatch;
+    if(task.phase==='fwd'){if(s>0)deps.add(id(s-1,c,m,'fwd'));else if(c>0)deps.add(id(pp-1,c-1,m,'fwd'));}
+    else{deps.add(id(s,c,m,'fwd'));if(s<pp-1)deps.add(id(s+1,c,m,'bwd'));else if(c<vpp-1)deps.add(id(0,c+1,m,'bwd'));}
     pending[task.id]=deps.size;for(const dep of deps)successors[dep].push(task.id);
    }
   }
   const ready=[];for(let i=0;i<count;i++)if(!pending[i])ready.push(i);
-  let duration=0;for(let cursor=0;cursor<ready.length;cursor++){
-   const task=events[ready[cursor]];task.end=task.start+1;duration=Math.max(duration,task.end);
-   for(const next of successors[task.id]){events[next].start=Math.max(events[next].start,task.end);if(--pending[next]===0)ready.push(next);}
-  }
-  if(ready.length!==count)throw new Error('调度依赖出现循环');
-  const peakOutstanding=stages.map(row=>{let outstanding=0,peak=0;for(const task of row){outstanding+=task.phase==='fwd'?1:-1;peak=Math.max(peak,outstanding);}return peak;}),busyTime=count,utilization=busyTime/(pp*duration);
-  return {pp,mbn,mode,events,stages,duration,busyTime,utilization,bubbleRate:1-utilization,peakOutstanding};
+  let duration=0;for(let cursor=0;cursor<ready.length;cursor++){const task=events[ready[cursor]];task.end=task.start+task.cost;duration=Math.max(duration,task.end);for(const next of successors[task.id]){events[next].start=Math.max(events[next].start,task.end);if(--pending[next]===0)ready.push(next);}}
+  if(ready.length!==count)throw new Error('调度依赖出现循环，请检查 VPP 分组');
+  const peakOutstanding=stages.map(row=>{let outstanding=0,peak=0;for(const task of row){outstanding+=task.phase==='fwd'?1:-1;peak=Math.max(peak,outstanding);}return peak;}),regions=stages.map(row=>{const list=[];for(const task of row){const last=list[list.length-1];if(last?.segment===task.segment)last.end=task.end;else list.push({segment:task.segment,start:task.start,end:task.end});}return list;}),boundaries=regions.map(list=>list.slice(1).map((region,i)=>({time:region.start,from:list[i].segment,to:region.segment}))),busyTime=mbn*totalLayers*(1+backwardRatio),utilization=Math.min(1,Math.max(0,busyTime/(pp*duration)));
+  return {pp,mbn,vpp,mode,backwardRatio,layerCounts,chunkLayers,totalLayers,referenceDuration:totalLayers/(pp*vpp),events,stages,duration,busyTime,utilization,bubbleRate:1-utilization,peakOutstanding,regions,boundaries};
  }
  return {validateBatch,buildSchedule};
 })();
+
 </script>
 <script id="pipeline-app">
 'use strict';
 var PPScheduler=(()=>{
- const $=id=>document.getElementById(id),view=$('scheduleView'),board=$('scheduleBoard'),svg=$('scheduleSvg'),LEFT=116,TOP=44,ROW=58;
+ const $=id=>document.getElementById(id),view=$('scheduleView'),board=$('scheduleBoard'),svg=$('scheduleSvg'),LEFT=155,TOP=44,ROW=76;
  const state={config:null,key:'',model:null,step:52,microbatch:null,event:null},idle='悬停查看微批详情；单击可高亮该微批的全部前向与反向，单击空白取消。';
+ const phaseNames={warmup:'warmup',steady:'1F1B',cooldown:'cooldown',forward:'全部前向',backward:'全部反向'},phaseColors={warmup:'#68769e',steady:'#187f96',cooldown:'#a87130',forward:'#187f96',backward:'#a87130'};
  let frame=0;
- function settings(){return {gbs:Number($('scheduleGbs').value),mbs:Number($('scheduleMbs').value),mode:$('scheduleMode').value};}
- function restore(data){if(!data)return;$('scheduleGbs').value=data.gbs;$('scheduleMbs').value=data.mbs;$('scheduleMode').value=data.mode??'1f1b';state.key='';}
+ const fmt=n=>Number(n.toPrecision(10)).toLocaleString('en-US',{useGrouping:false,maximumFractionDigits:6});
+ function settings(){return {gbs:Number($('scheduleGbs').value),mbs:Number($('scheduleMbs').value),mode:$('scheduleMode').value,backwardRatio:Number($('scheduleBackwardRatio').value),vpp:$('scheduleVppEnabled').checked?Number($('scheduleVpp').value):1,showBoundaries:$('scheduleBoundaries').checked};}
+ function syncVpp(){const on=$('scheduleVppEnabled').checked;$('scheduleVpp').disabled=!on;$('scheduleMode').querySelector('[value="gpipe"]').disabled=on;if(on)$('scheduleMode').value='1f1b';$('scheduleVppNote').textContent=on?'VPP：每个物理 stage 的 chunk 串行交错执行；层数尽量均分，余数放在后面的 chunk。当前按 PP size 分组，要求 MBN 能被 PP 整除，每个 stage 至少有 chunk 数对应的层数。':'VPP 将每个物理 stage 拆为多个 chunk，按层数尽量均分，余数放在后面的 chunk。';}
+ function validate(raw){const result=XYPipeline.validateBatch(raw);if($('scheduleVppEnabled').checked&&raw.vpp===1){result.ok=false;result.errors.push('启用 VPP 时每个 stage 至少需要 2 个 chunk；单个 chunk 请关闭 VPP');}return result;}
+ function restore(data){if(!data)return;$('scheduleGbs').value=Number(data.gbs);$('scheduleMbs').value=Number(data.mbs);$('scheduleMode').value=data.mode??'1f1b';$('scheduleBackwardRatio').value=Number(data.backwardRatio??2);$('scheduleVppEnabled').checked=(data.vpp??1)>1;$('scheduleVpp').value=data.vpp>1?Number(data.vpp):2;$('scheduleBoundaries').checked=data.showBoundaries??true;syncVpp();state.key='';}
  function resetInfo(){$('scheduleSelection').textContent=idle;$('scheduleSelection').dataset.pinned='false';}
- function update(config){state.config=config?{pp:config.pp,dp:config.dp}:null;if(!view.hidden)render();}
+ function update(config){state.config=config?{pp:config.pp,dp:config.dp,layerCounts:config.layerCounts.slice()}:null;if(!view.hidden)render();}
  function clear(errors){state.model=null;state.microbatch=null;state.event=null;svg.innerHTML='';board.hidden=true;$('scheduleError').hidden=false;$('scheduleError').textContent=errors.join('；');for(const id of ['scheduleMbn','scheduleDuration','scheduleBubble','schedulePeak'])$(id).textContent='—';resetInfo();}
  function render(){
   if(view.hidden)return;
   $('schedulePp').textContent=state.config?.pp??'—';$('scheduleDp').textContent=state.config?.dp??'—';
   if(!state.config){state.key='';$('scheduleFormula').textContent='';clear(['请先完成左侧并行配置，PP 和 DP 有效后自动生成调度图。']);return;}
-  const raw={...settings(),...state.config},valid=XYPipeline.validateBatch(raw);
+  const raw={...settings(),...state.config},valid=validate(raw);
   if(!valid.ok){state.key='';$('scheduleFormula').textContent='';clear(valid.errors);return;}
-  const key=JSON.stringify(raw);
+  const key=JSON.stringify({...raw,showBoundaries:undefined});
   if(key!==state.key||!state.model){try{state.model=XYPipeline.buildSchedule(valid.config);}catch(error){clear([error.message]);return;}state.key=key;state.microbatch=null;state.event=null;board.scrollLeft=0;board.scrollTop=0;resetInfo();}
   const m=state.model;$('scheduleError').hidden=true;board.hidden=false;board.style.height=Math.min(520,TOP+m.pp*ROW+12)+'px';
-  $('scheduleMbn').textContent=m.mbn;$('scheduleDuration').textContent=m.duration;$('scheduleBubble').textContent=(m.bubbleRate*100).toFixed(1)+'%';$('schedulePeak').textContent=Math.max(...m.peakOutstanding);
+  $('scheduleMbn').textContent=m.mbn;$('scheduleDuration').textContent=fmt(m.duration);$('scheduleBubble').textContent=(m.bubbleRate*100).toFixed(1)+'%';$('schedulePeak').textContent=Math.max(...m.peakOutstanding);
   $('scheduleFormula').textContent=' = '+valid.config.gbs+' ÷ ('+valid.config.mbs+' × '+valid.config.dp+') = '+m.mbn;
   draw();
  }
- function dimensions(full=false){const m=state.model;return {width:Math.max(full?0:board.clientWidth,LEFT+m.duration*state.step+20),height:Math.max(full?0:board.clientHeight,TOP+m.pp*ROW+12)};}
+ function pixels(){const m=state.model;return Math.min(state.step/m.referenceDuration,8000000/m.duration);}
+ function dimensions(full=false){const m=state.model;return {width:Math.max(full?0:board.clientWidth,LEFT+m.duration*pixels()+20),height:Math.max(full?0:board.clientHeight,TOP+m.pp*ROW+12)};}
+ function title(task){return 'PP stage '+task.stage+(state.model.vpp>1?' · C'+task.chunk:'')+' · 微批 '+(task.microbatch+1)+' · '+(task.phase==='fwd'?'前向 F':'反向 B')+' · '+task.layers+' 层 · 耗时 '+fmt(task.cost)+' · 时间 '+fmt(task.start)+'–'+fmt(task.end)+' · '+phaseNames[task.segment];}
  function taskMarkup(task){
-  const chosen=state.microbatch===task.microbatch,dim=state.microbatch!==null&&!chosen,x=LEFT+task.start*state.step+2,y=TOP+task.stage*ROW+10,width=Math.max(2,state.step-4),fwd=task.phase==='fwd',fill=fwd?'#d8edf1':'#fff0d7',stroke=chosen?'#163047':fwd?'#187f96':'#d08a25',label=(fwd?'F':'B')+(task.microbatch+1),title='PP stage '+task.stage+'，微批 '+(task.microbatch+1)+'，'+(fwd?'前向':'反向')+'，时间步 '+task.start+'–'+task.end;
-  return '<g class="schedule-task" id="scheduleTask-'+task.id+'" data-schedule-event="'+task.id+'" data-stage="'+task.stage+'" data-microbatch="'+task.microbatch+'" data-phase="'+task.phase+'" data-selected="'+chosen+'" role="button" tabindex="0" aria-pressed="'+chosen+'" aria-label="'+title+'" opacity="'+(dim?'.26':'1')+'"><title>'+title+'</title><rect x="'+x+'" y="'+y+'" width="'+width+'" height="36" rx="4" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(chosen?2:1.1)+'"/>'+(state.step>=28?'<text x="'+(x+width/2)+'" y="'+(y+23)+'" text-anchor="middle" fill="'+(fwd?'#155c6d':'#83530c')+'" font-size="'+(label.length>4?9:11)+'" font-weight="600" pointer-events="none">'+label+'</text>':'')+'</g>';
+  const chosen=state.microbatch===task.microbatch,dim=state.microbatch!==null&&!chosen,span=task.cost*pixels(),gap=Math.min(4,span*.08),x=LEFT+task.start*pixels()+gap/2,y=TOP+task.stage*ROW+25,width=Math.max(.15,span-gap),fwd=task.phase==='fwd',fill=fwd?'#d8edf1':'#fff0d7',stroke=chosen?'#163047':fwd?'#187f96':'#d08a25',label=(fwd?'F':'B')+(task.microbatch+1),vpp=state.model.vpp>1;
+  return '<g class="schedule-task" id="scheduleTask-'+task.id+'" data-schedule-event="'+task.id+'" data-stage="'+task.stage+'" data-chunk="'+task.chunk+'" data-duration="'+task.cost+'" data-segment="'+task.segment+'" data-microbatch="'+task.microbatch+'" data-phase="'+task.phase+'" data-selected="'+chosen+'" role="button" tabindex="0" aria-pressed="'+chosen+'" aria-label="'+title(task)+'" opacity="'+(dim?'.26':'1')+'"><title>'+title(task)+'</title><rect x="'+x+'" y="'+y+'" width="'+width+'" height="40" rx="'+Math.min(4,width/3)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(chosen?2:1.1)+'"/>'+(width>=28?'<text x="'+(x+width/2)+'" y="'+(y+(vpp?16:25))+'" text-anchor="middle" fill="'+(fwd?'#155c6d':'#83530c')+'" font-size="'+(label.length>4?9:11)+'" font-weight="600" pointer-events="none">'+label+'</text>'+(vpp?'<text x="'+(x+width/2)+'" y="'+(y+31)+'" text-anchor="middle" fill="#61768a" font-size="10" pointer-events="none">C'+task.chunk+'</text>':''):'')+'</g>';
  }
  function scene(full=false){
-  const m=state.model,{width,height}=dimensions(full),sx=full?0:board.scrollLeft,sy=full?0:board.scrollTop,vw=full?width:board.clientWidth,vh=full?height:board.clientHeight;
-  const firstStage=full?0:Math.max(0,Math.floor((sy-TOP)/ROW)-1),lastStage=full?m.pp:Math.min(m.pp,Math.ceil((sy+vh-TOP)/ROW)+1),startTime=full?0:Math.max(0,Math.floor((sx-LEFT)/state.step)-1),endTime=full?m.duration:Math.min(m.duration,Math.ceil((sx+vw-LEFT)/state.step)+1),stride=Math.max(1,Math.ceil(35/state.step));
+  const m=state.model,{width,height}=dimensions(full),px=pixels(),sx=full?0:board.scrollLeft,sy=full?0:board.scrollTop,vw=full?width:board.clientWidth,vh=full?height:board.clientHeight;
+  const firstStage=full?0:Math.max(0,Math.floor((sy-TOP)/ROW)-1),lastStage=full?m.pp:Math.min(m.pp,Math.ceil((sy+vh-TOP)/ROW)+1),startTime=full?0:Math.max(0,(sx-LEFT)/px-1),endTime=full?m.duration:Math.min(m.duration,(sx+vw-LEFT)/px+1);
+  const target=Math.max(55/px,full?m.duration/2000:0),power=10**Math.floor(Math.log10(target)),stride=[1,2,5,10].find(n=>n*power>=target)*power;
+  const ticks=[];for(let i=Math.floor(startTime/stride),n=Math.ceil(endTime/stride);i<=n;i++)ticks.push(i*stride);
   const parts=[];
   for(let s=firstStage;s<lastStage;s++)parts.push('<rect x="'+Math.max(LEFT,sx)+'" y="'+(TOP+s*ROW)+'" width="'+Math.max(0,Math.min(width,sx+vw)-Math.max(LEFT,sx))+'" height="'+ROW+'" fill="'+(s%2?'#f5f8fa':'#eef3f7')+'"/><line x1="'+sx+'" x2="'+(sx+vw)+'" y1="'+(TOP+(s+1)*ROW)+'" y2="'+(TOP+(s+1)*ROW)+'" stroke="#dce5ed"/>');
-  for(let t=Math.floor(startTime/stride)*stride;t<=endTime;t+=stride){const x=LEFT+t*state.step;parts.push('<line x1="'+x+'" x2="'+x+'" y1="'+Math.max(TOP,sy)+'" y2="'+Math.min(height,sy+vh)+'" stroke="#dce5ed" stroke-dasharray="2 4"/>');}
+  for(const t of ticks){const x=LEFT+t*px;parts.push('<line x1="'+x+'" x2="'+x+'" y1="'+Math.max(TOP,sy)+'" y2="'+Math.min(height,sy+vh)+'" stroke="#dce5ed" stroke-dasharray="2 4"/>');}
   for(let s=firstStage;s<lastStage;s++){
    const row=m.stages[s];let lo=0,hi=row.length;
    while(lo<hi){const mid=(lo+hi)>>1;if(row[mid].end<=startTime)lo=mid+1;else hi=mid;}
    for(let i=full?0:lo;i<row.length&&(full||row[i].start<=endTime);i++)parts.push(taskMarkup(row[i]));
+   if($('scheduleBoundaries').checked){
+    for(const region of m.regions[s]){if(region.end<startTime||region.start>endTime)continue;const x=LEFT+region.start*px,w=(region.end-region.start)*px,color=phaseColors[region.segment],label=phaseNames[region.segment];parts.push('<g data-schedule-region="'+region.segment+'" data-stage="'+s+'"><title>'+label+' · '+fmt(region.start)+'–'+fmt(region.end)+'</title><line x1="'+(x+2)+'" x2="'+(x+Math.max(2,w-2))+'" y1="'+(TOP+s*ROW+6)+'" y2="'+(TOP+s*ROW+6)+'" stroke="'+color+'" stroke-width="2"/>'+(w>19?'<text x="'+(Math.max(x,sx+LEFT)+4)+'" y="'+(TOP+s*ROW+19)+'" font-size="10" fill="'+color+'">'+(w<label.length*6+8?label[0].toUpperCase():label)+'</text>':'')+'</g>');}
+    for(const b of m.boundaries[s]){if(b.time<startTime||b.time>endTime)continue;const x=LEFT+b.time*px;parts.push('<line data-schedule-boundary="'+fmt(b.time)+'" data-stage="'+s+'" x1="'+x+'" x2="'+x+'" y1="'+(TOP+s*ROW+3)+'" y2="'+(TOP+(s+1)*ROW-3)+'" stroke="'+phaseColors[b.to]+'" stroke-width="1.3" stroke-dasharray="4 3"><title>'+phaseNames[b.from]+' → '+phaseNames[b.to]+' · '+fmt(b.time)+'</title></line>');}
+   }
   }
   parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+LEFT+'" height="'+vh+'" fill="#fff"/><line x1="'+(sx+LEFT)+'" x2="'+(sx+LEFT)+'" y1="'+sy+'" y2="'+(sy+vh)+'" stroke="#cfdee8"/>');
-  for(let s=firstStage;s<lastStage;s++)parts.push('<g class="schedule-stage-label" data-stage="'+s+'"><text x="'+(sx+15)+'" y="'+(TOP+s*ROW+24)+'" font-size="12" fill="#163047" font-weight="600">PP stage '+s+'</text><text x="'+(sx+15)+'" y="'+(TOP+s*ROW+43)+'" font-size="10" fill="#61768a">峰值 '+m.peakOutstanding[s]+' 微批</text></g>');
+  for(let s=firstStage;s<lastStage;s++){const chunks=m.chunkLayers[s],summary=m.vpp>1?(chunks.length<=4?chunks.map((n,c)=>'C'+c+':'+n).join(' '):m.vpp+' chunks · 悬停查看'):m.layerCounts[s]+' 层';parts.push('<g class="schedule-stage-label" data-stage="'+s+'"><title>'+m.layerCounts[s]+' 层；'+chunks.map((n,c)=>'C'+c+' '+n+' 层').join('，')+'</title><text x="'+(sx+12)+'" y="'+(TOP+s*ROW+22)+'" font-size="12" fill="#163047" font-weight="600">PP stage '+s+'</text><text x="'+(sx+12)+'" y="'+(TOP+s*ROW+42)+'" font-size="'+(summary.length>22?8:10)+'" fill="#61768a">'+summary+'</text><text x="'+(sx+12)+'" y="'+(TOP+s*ROW+60)+'" font-size="10" fill="#61768a">峰值 '+m.peakOutstanding[s]+' 块'+(m.vpp>1?' · '+m.layerCounts[s]+' 层':'')+'</text></g>');}
   parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+vw+'" height="'+TOP+'" fill="#fff"/><line x1="'+sx+'" x2="'+(sx+vw)+'" y1="'+(sy+TOP)+'" y2="'+(sy+TOP)+'" stroke="#cfdee8"/>');
-  for(let t=Math.floor(startTime/stride)*stride;t<=endTime;t+=stride){const x=LEFT+t*state.step;if(x>=sx+LEFT)parts.push('<text x="'+(x+4)+'" y="'+(sy+27)+'" font-size="11" fill="#61768a">'+t+'</text>');}
-  parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+LEFT+'" height="'+TOP+'" fill="#fff"/><text x="'+(sx+15)+'" y="'+(sy+27)+'" fill="#61768a" font-size="10">stage / 时间步</text>');
+  for(const t of ticks){const x=LEFT+t*px;if(x>=sx+LEFT)parts.push('<text x="'+(x+4)+'" y="'+(sy+27)+'" font-size="11" fill="#61768a">'+fmt(t)+'</text>');}
+  parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+LEFT+'" height="'+TOP+'" fill="#fff"/><text x="'+(sx+12)+'" y="'+(sy+27)+'" fill="#61768a" font-size="10">物理 stage / 相对时间</text>');
   return parts.join('');
  }
  function draw(){if(!state.model||view.hidden||board.hidden)return;const size=dimensions();svg.setAttribute('width',size.width);svg.setAttribute('height',size.height);svg.innerHTML=scene();$('scheduleZoomLabel').textContent=Math.round(state.step/52*100)+'%';}
  function requestDraw(){if(frame||view.hidden)return;frame=requestAnimationFrame(()=>{frame=0;draw();});}
- function describe(task){if(!task)return;$('scheduleSelection').textContent='PP stage '+task.stage+' · 微批 '+(task.microbatch+1)+' · '+(task.phase==='fwd'?'前向 F':'反向 B')+' · 时间步 '+task.start+'–'+task.end+' · 本 stage 峰值 '+state.model.peakOutstanding[task.stage]+' 个未回传微批'+(state.microbatch!==null?'（已固定，再次点击该微批或空白取消）':'');$('scheduleSelection').dataset.pinned=String(state.microbatch!==null);}
+ function describe(task){if(!task)return;$('scheduleSelection').textContent=title(task)+' · 本 stage 峰值 '+state.model.peakOutstanding[task.stage]+' 个待反向块'+(state.microbatch!==null?'（已固定，再次点击该微批或空白取消）':'');$('scheduleSelection').dataset.pinned=String(state.microbatch!==null);}
  function choose(element){
   if(!state.model)return;const task=element?state.model.events[Number(element.dataset.scheduleEvent)]:null;
   if(!task||state.microbatch===task.microbatch){state.microbatch=null;state.event=null;resetInfo();}else{state.microbatch=task.microbatch;state.event=task.id;describe(task);}draw();
   if(element)document.getElementById('scheduleTask-'+element.dataset.scheduleEvent)?.focus({preventScroll:true});
  }
  board.addEventListener('scroll',requestDraw,{passive:true});
- board.addEventListener('pointermove',event=>{if(state.microbatch!==null||!state.model)return;const element=event.target.closest('[data-schedule-event]');if(element)describe(state.model.events[Number(element.dataset.scheduleEvent)]);});
+ board.addEventListener('pointermove',event=>{if(state.microbatch!==null||!state.model)return;const element=event.target.closest('[data-schedule-event]');if(element)describe(state.model.events[Number(element.dataset.scheduleEvent)]);else resetInfo();});
  board.addEventListener('pointerleave',()=>{if(state.microbatch===null)resetInfo();});
  board.addEventListener('click',event=>choose(event.target.closest('[data-schedule-event]')));
  board.addEventListener('keydown',event=>{if(event.key==='Escape'){state.microbatch=null;state.event=null;resetInfo();draw();event.stopPropagation();}else if((event.key==='Enter'||event.key===' ')&&event.target.closest('[data-schedule-event]')){event.preventDefault();choose(event.target.closest('[data-schedule-event]'));}});
- for(const id of ['scheduleGbs','scheduleMbs'])$(id).addEventListener('input',render);$('scheduleMode').addEventListener('change',render);
- function zoom(step){const before=state.step;state.step=Math.max(4,Math.min(120,step));const left=Math.max(0,(board.scrollLeft+LEFT)/before*state.step-LEFT);draw();board.scrollLeft=left;requestDraw();}
+ for(const id of ['scheduleGbs','scheduleMbs','scheduleBackwardRatio','scheduleVpp'])$(id).addEventListener('input',render);$('scheduleMode').addEventListener('change',render);$('scheduleBoundaries').addEventListener('change',render);$('scheduleVppEnabled').addEventListener('change',()=>{syncVpp();render();});
+ function zoom(step){const before=state.model?pixels():1;state.step=Math.max(4,Math.min(120,step));const after=state.model?pixels():1,left=board.scrollLeft/before*after;draw();board.scrollLeft=left;requestDraw();}
  $('scheduleZoomOut').addEventListener('click',()=>zoom(state.step/1.25));$('scheduleZoomIn').addEventListener('click',()=>zoom(state.step*1.25));$('scheduleZoomReset').addEventListener('click',()=>zoom(52));
  new ResizeObserver(requestDraw).observe(board);
- function exportSvg(){if(!state.model)return null;const {width,height}=dimensions(true);return '<svg xmlns="http://www.w3.org/2000/svg" font-family="Consolas,Microsoft YaHei,sans-serif" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'"><title>PP 调度图 '+(state.model.mode==='gpipe'?'GPipe':'1F1B')+' · PP '+state.model.pp+' · MBN '+state.model.mbn+'</title><desc>各 stage 的前向、反向均为 1 个相对时间步；不计通信耗时。</desc>'+scene(true)+'</svg>';}
- return {update,render,settings,restore,exportSvg};
+ function exportSvg(){if(!state.model)return null;const m=state.model,{width,height}=dimensions(true);return '<svg xmlns="http://www.w3.org/2000/svg" font-family="Consolas,Microsoft YaHei,sans-serif" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'"><title>PP 调度图 '+(m.mode==='gpipe'?'GPipe':'1F1B')+' · PP '+m.pp+' · VPP '+m.vpp+' · MBN '+m.mbn+'</title><desc>按各 stage 实际层数；每层前向为 1，反向为 '+m.backwardRatio+'。不计通信、重计算和层类型差异。</desc>'+scene(true)+'</svg>';}
+ return {update,render,settings,restore,exportSvg,validate};
 })();
 
 </script>
@@ -777,9 +821,9 @@ var PPScheduler=(()=>{
  async function toggleFullscreen(){if(fullscreenPending)return;fullscreenPending=true;stopPan();const workspace=document.querySelector('.workspace');try{if(S.fullscreen){if(document.fullscreenElement){await document.exitFullscreen();}else{workspace.classList.remove('is-fullscreen');fullscreenState(false);}}else{if(workspace.requestFullscreen){try{await workspace.requestFullscreen();}catch{workspace.classList.add('is-fullscreen');fullscreenState(true);}}else{workspace.classList.add('is-fullscreen');fullscreenState(true);}}}finally{fullscreenPending=false;}}
  $('fullscreenBtn').addEventListener('click',toggleFullscreen);document.addEventListener('fullscreenchange',()=>{const on=document.fullscreenElement===document.querySelector('.workspace');if(!on)document.querySelector('.workspace').classList.remove('is-fullscreen');fullscreenState(on);});
  for(const [id,side,label] of [['toggleConfig','left','并行配置'],['toggleDetail','right','模块与通信']])$(id).addEventListener('click',()=>{const collapsed=document.querySelector('.app').classList.toggle(side+'-collapsed');$(id).setAttribute('aria-expanded',String(!collapsed));$(id).setAttribute('aria-label',(collapsed?'展开':'收起')+label);$(id).title=(collapsed?'展开':'收起')+label;requestAnimationFrame(()=>{if(S.t)renderDiagram();positionCommTooltip();});});
- $('exportBtn').addEventListener('click',()=>{const r=raw(),v=M.validateConfig(r);if(!v.ok){toast('请先完成有效配置再导出');return;}const schedule=PPScheduler.settings(),batch=XYPipeline.validateBatch({...schedule,pp:v.config.pp,dp:v.config.dp});if(!batch.ok&&S.view==='schedule'){toast(batch.errors.join('；'));return;}if(!batch.ok)toast('配置已导出；批量设置无效，未包含 PP 调度参数');download(new Blob([JSON.stringify({version:1,...v.config,...options(),...(batch.ok?{schedule}:{}),phases:undefined},null,2)],{type:'application/json'}),'xy-train-config.json');});
+ $('exportBtn').addEventListener('click',()=>{const r=raw(),v=M.validateConfig(r);if(!v.ok){toast('请先完成有效配置再导出');return;}const schedule=PPScheduler.settings(),batch=PPScheduler.validate({...schedule,pp:v.config.pp,dp:v.config.dp,layerCounts:v.config.layerCounts});if(!batch.ok&&S.view==='schedule'){toast(batch.errors.join('；'));return;}if(!batch.ok)toast('配置已导出；批量设置无效，未包含 PP 调度参数');download(new Blob([JSON.stringify({version:1,...v.config,...options(),...(batch.ok?{schedule}:{}),phases:undefined},null,2)],{type:'application/json'}),'xy-train-config.json');});
  $('importBtn').addEventListener('click',()=>$('fileInput').click());$('fileInput').addEventListener('change',async e=>{
-  const file=e.target.files[0];if(!file)return;try{if(file.size>1048576)throw Error('配置文件不能超过 1 MB');const data=JSON.parse(await file.text());const v=M.validateConfig(data);if(!v.ok)throw Error(v.errors.join('；'));if(data.schedule){const batch=XYPipeline.validateBatch({...data.schedule,pp:v.config.pp,dp:v.config.dp});if(!batch.ok)throw Error(batch.errors.join('；'));}loadConfig({...v.config,dispatcher:data.dispatcher,sp:data.sp,optimizer:data.optimizer,palette:data.palette,schedule:data.schedule});toast('配置已导入并通过校验');}catch(err){toast('导入失败：'+err.message);}finally{e.target.value='';}
+  const file=e.target.files[0];if(!file)return;try{if(file.size>1048576)throw Error('配置文件不能超过 1 MB');const data=JSON.parse(await file.text());const v=M.validateConfig(data);if(!v.ok)throw Error(v.errors.join('；'));if(data.schedule){const batch=XYPipeline.validateBatch({...data.schedule,pp:v.config.pp,dp:v.config.dp,layerCounts:v.config.layerCounts});if(!batch.ok)throw Error(batch.errors.join('；'));}loadConfig({...v.config,dispatcher:data.dispatcher,sp:data.sp,optimizer:data.optimizer,palette:data.palette,schedule:data.schedule});toast('配置已导入并通过校验');}catch(err){toast('导入失败：'+err.message);}finally{e.target.value='';}
  });
  $('saveSvg').addEventListener('click',()=>{
   if(S.view==='schedule'){const content=PPScheduler.exportSvg();if(!content){toast('请先输入有效的批量配置');return;}download(new Blob([content],{type:'image/svg+xml;charset=utf-8'}),'pp-schedule.svg');return;}
