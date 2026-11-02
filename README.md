@@ -1,12 +1,23 @@
 # wzb_tools_5d_parallel
 
-5D 并行权重切分与通信可视化工具，保持单 HTML、无外部运行依赖；可以在线访问，也可以保存 HTML 后离线使用。
+5D 并行权重切分、通信与 PP 流水线调度可视化工具，保持单 HTML、无外部运行依赖；可以在线访问，也可以保存 HTML 后离线使用。
 
 - 网站：<https://superwzb0502.github.io/wzb_tools_5d_parallel/>
 - GitHub 公开仓库：<https://github.com/SuperWZB0502/wzb_tools_5d_parallel>
 - 页面源文件：`tools/draw_parallel_card.html`。
 - 默认分支：`main`；远端：`origin`。
 - 设计与部署说明：`docs/`；回归测试：`tests/`。
+
+## PP 调度图
+
+在“通信组表”右侧切换到“PP 调度图”，输入 GBS、MBS，页面沿用左侧 PP、DP，按 `MBN = GBS ÷（MBS × DP）` 自动计算微批次数并绘制流水线。
+
+- 支持非交错 1F1B 与 GPipe；stage 纵向排列，时间横向展开，F/B 分别表示前向和反向。
+- 可查看总时间步、空闲比例与峰值未回传微批数，点击色块高亮同一微批的调度过程。
+- 支持时间缩放、双轴滚动、批量设置随配置导入导出，以及下载完整调度 SVG。
+- 输入必须能整除，不静默取整；支持 `PP × MBN ≤ 65,536`，大图按视窗绘制。
+
+调度使用等时模型：各 stage 的前向、反向各占 1 步，不计通信、重计算和层数差异。图中指标用于理解调度结构，不作为实际训练性能或显存预测。
 
 ## 修改与自动发布
 

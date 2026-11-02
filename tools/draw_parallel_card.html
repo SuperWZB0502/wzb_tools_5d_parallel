@@ -21,6 +21,9 @@
 @media(min-width:1700px){.app{--config-width:285px;--detail-width:335px;grid-template-columns:var(--config-width) minmax(600px,1fr) var(--detail-width)}}
 @media(max-width:1150px){.app{--config-width:248px;grid-template-columns:var(--config-width) minmax(360px,1fr)}.app.right-collapsed .detail{min-height:40px}.app.right-collapsed .detail .panel-toggle{right:7px}}
 @media(max-width:720px){.app{display:block}.app.left-collapsed .config{height:40px}.app.left-collapsed .config .panel-toggle{right:7px}.comm-tooltip{width:330px}.workspace:fullscreen .toolbar,.workspace.is-fullscreen .toolbar{padding:5px 9px}.workspace:fullscreen .summary-line,.workspace.is-fullscreen .summary-line{display:none}.workspace:fullscreen .results-head,.workspace.is-fullscreen .results-head{padding-top:0}.workspace:fullscreen .board-hint,.workspace.is-fullscreen .board-hint{max-height:50px}}
+.app.schedule-mode,.app.schedule-mode.right-collapsed{grid-template-columns:268px minmax(360px,1fr)}.app.schedule-mode.left-collapsed,.app.schedule-mode.left-collapsed.right-collapsed{grid-template-columns:36px minmax(360px,1fr)}.app.schedule-mode .detail{display:none}.schedule-view{flex:1;min-width:0;padding:22px;background:#f3f7fa}.schedule-intro{display:flex;gap:18px;align-items:baseline;justify-content:space-between;margin-bottom:18px}.schedule-intro h2{font-size:18px}.schedule-intro p{font-size:12px;color:var(--muted);line-height:1.7}.schedule-form{display:grid;grid-template-columns:minmax(130px,1fr) minmax(130px,1fr) minmax(200px,1.25fr) auto;gap:16px;align-items:end}.schedule-form label{display:block;font-size:12px;color:#435b6f}.schedule-form label small{display:block;font-size:10px;margin:3px 0 7px}.schedule-form input,.schedule-form select{background:white;font-size:14px}.schedule-context{display:flex;gap:15px;align-items:center;min-height:36px;font-size:12px;color:var(--muted);white-space:nowrap}.schedule-context b{font:600 17px var(--mono);color:var(--ink);margin-left:4px}.schedule-formula{font-size:11px;color:var(--muted);line-height:1.8;margin:11px 0 0}.schedule-formula code{font:12px var(--mono);color:var(--accent)}.schedule-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:20px 0;background:#fff;border:1px solid var(--line);border-radius:6px}.schedule-stat{padding:14px 18px;border-right:1px solid var(--line)}.schedule-stat:last-child{border:0}.schedule-stat span{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.schedule-stat strong{font:600 25px var(--mono);color:var(--ink)}.schedule-stat:first-child strong{color:var(--accent)}.schedule-shell{border:1px solid #cfdee8;border-radius:7px;background:white;overflow:hidden}.schedule-controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line)}.schedule-legend{display:flex;gap:16px;font-size:11px;color:var(--muted)}.schedule-legend span{display:inline-flex;gap:6px;align-items:center}.schedule-legend i{width:16px;height:12px;border:1px solid #187f96;border-radius:3px;background:#d8edf1}.schedule-legend .backward i{background:#fff0d7;border-color:#d08a25}.schedule-legend .idle i{background:#eef3f7;border-color:#dce5ed}.schedule-zoom{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}.schedule-zoom button{font-size:12px;padding:3px 8px;min-height:28px}.schedule-board{height:440px;max-height:65vh;min-height:180px;overflow:auto;position:relative;background:#fbfcfd;overscroll-behavior:contain;touch-action:pan-x pan-y}.schedule-board svg{display:block;user-select:none}.schedule-task{cursor:pointer;outline:none}.schedule-task:focus-visible rect{stroke:#163047;stroke-width:3}.schedule-selection{min-height:45px;padding:11px 15px;font-size:12px;color:var(--muted);background:#fff;border-top:1px solid var(--line);line-height:1.8}.schedule-selection[data-pinned=true]{color:var(--ink)}.schedule-note{font-size:11px;color:var(--muted);line-height:1.9;margin-top:13px}.schedule-error{padding:18px;color:#a42c43;background:#fff4f6;border:1px solid #efd0d7;border-radius:5px;line-height:1.8;font-size:13px;margin:18px 0}.schedule-model-note{margin-top:9px;font-size:11px;color:var(--muted)}
+@media(max-width:1100px){.schedule-form{grid-template-columns:1fr 1fr}.schedule-intro{display:block}.schedule-intro p{margin-top:7px}.schedule-context{justify-content:flex-end}.schedule-stats strong{font-size:22px}}
+@media(max-width:720px){.schedule-view{padding:18px 12px}.schedule-form{gap:12px}.schedule-stats{grid-template-columns:1fr 1fr}.schedule-stat{padding:12px}.schedule-stat:nth-child(2){border-right:0}.schedule-stat:nth-child(-n+2){border-bottom:1px solid var(--line)}.schedule-stat:nth-child(3){border-right:1px solid var(--line)}.schedule-legend{gap:10px}.schedule-board{height:390px}.schedule-controls{padding:10px;gap:10px}}
 </style>
 </head>
 <body>
@@ -40,10 +43,33 @@
 <label class="checkline"><input id="distributed_optimizer" type="checkbox"><span class="mode-label">distributed_optimizer</span></label><p id="optimizerNote" class="option-note"></p>
 <div class="divider"></div><div class="section-head"><h2>PP 层分布</h2><span class="step-label">手动分配</span></div><p class="option-note">修改总层数或 PP 后自动均分，余数放在后面的 stage；随后可手动修改。每个 stage 至少一层。</p><table class="layers-table"><thead><tr><th>PP rank</th><th>层数</th><th>全局层范围</th></tr></thead><tbody id="layerRows"></tbody></table><div id="layerPager" class="mini-pager"></div><div id="layerProgress" class="layer-progress" role="status"></div>
 <div class="divider"></div><div class="section-head"><h2>示例配置</h2><span class="step-label">点击载入</span></div><div class="btn-row"><button data-preset="default">16 卡 / 默认</button><button data-preset="small">32 卡 / 非均匀 PP</button><button data-preset="stages">3 个 stage</button><button data-preset="large">4096 卡</button></div><p class="config-footer">每个模块汇总本 stage 层范围的重复结构。<br>只展示 Attention / MoE，不逐层或逐专家展开。<br>拓扑模型依据提供的 XY-Train 设计说明。</p></div></aside>
-<section class="workspace" aria-label="可视化结果"><div class="results-head"><div id="summary" class="summary-line"></div><nav class="tabs" aria-label="结果视图"><button class="tab active" data-view="diagram">权重切分图</button><button class="tab" data-view="groups">通信组表</button></nav></div>
-<div class="toolbar"><span class="toolbar-label">选择PP stage</span><details id="stagePop" class="stage-pop"><summary id="stageLabel">PP stage</summary><div class="stage-panel"><h3>展开 PP stage</h3><p class="option-note">收起仍保留真实层范围和通信拓扑。</p><div class="btn-row" style="margin-top:10px"><button data-stage-action="ends">仅首尾</button><button data-stage-action="all">全部展开</button><button data-stage-action="none">全部收起</button></div><div id="stageList" class="stage-list"></div><div id="stagePager" class="mini-pager"></div></div></details><span class="toolbar-sep"></span><label class="phase" data-phase="fwd"><input type="checkbox" checked value="fwd">正向</label><label class="phase" data-phase="bwd"><input type="checkbox" value="bwd">反向</label><label class="phase" data-phase="sync"><input type="checkbox" value="sync">梯度同步与参数更新</label><div class="locate"><label for="rankInput">查询rank号</label><input id="rankInput" type="number" min="0" placeholder="rank" aria-label="查询 global rank"><button id="locateBtn">查询</button></div></div>
+<section class="workspace" aria-label="可视化结果"><div class="results-head"><div id="summary" class="summary-line"></div><nav class="tabs" aria-label="结果视图"><button class="tab active" data-view="diagram">权重切分图</button><button class="tab" data-view="groups">通信组表</button><button class="tab" data-view="schedule">PP 调度图</button></nav></div>
+<div id="parallelToolbar" class="toolbar"><span class="toolbar-label">选择PP stage</span><details id="stagePop" class="stage-pop"><summary id="stageLabel">PP stage</summary><div class="stage-panel"><h3>展开 PP stage</h3><p class="option-note">收起仍保留真实层范围和通信拓扑。</p><div class="btn-row" style="margin-top:10px"><button data-stage-action="ends">仅首尾</button><button data-stage-action="all">全部展开</button><button data-stage-action="none">全部收起</button></div><div id="stageList" class="stage-list"></div><div id="stagePager" class="mini-pager"></div></div></details><span class="toolbar-sep"></span><label class="phase" data-phase="fwd"><input type="checkbox" checked value="fwd">正向</label><label class="phase" data-phase="bwd"><input type="checkbox" value="bwd">反向</label><label class="phase" data-phase="sync"><input type="checkbox" value="sync">梯度同步与参数更新</label><div class="locate"><label for="rankInput">查询rank号</label><input id="rankInput" type="number" min="0" placeholder="rank" aria-label="查询 global rank"><button id="locateBtn">查询</button></div></div>
 <div id="diagramView"><div class="view-controls"><div class="control-group"><label for="paletteSelect">通信域配色</label><select id="paletteSelect"><option value="contrast">鲜明</option><option value="accessible">色盲友好</option><option value="mineral">矿物</option></select></div><div id="domainLegend" class="control-group"></div><div class="control-group" id="replicationControls"><label for="blockSelect">复制块</label><select id="blockSelect" aria-label="选择复制块"></select></div><div class="control-group" id="cardPageControls"></div><div class="control-group zoom"><button id="zoomOut" aria-label="缩小">−</button><span id="zoomLabel">100%</span><button id="zoomIn" aria-label="放大">＋</button><button id="fitBtn">适应</button><button id="resetZoom">1:1</button><button id="fullscreenBtn" class="icon-button" aria-label="全屏权重切分图" aria-pressed="false" title="全屏权重切分图"><svg data-fullscreen-icon="expand" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><svg data-fullscreen-icon="restore" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" hidden><rect x="8" y="3" width="13" height="13" rx="1" fill="white" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="8" width="13" height="13" rx="1" fill="white" stroke="currentColor" stroke-width="1.7"/></svg></button></div></div><div id="routeLegend" class="route-legend" aria-label="通信连线说明" hidden></div><div id="board" class="board" tabindex="0" aria-label="权重画布，支持 WASD 移动"></div><div id="boardHint" class="board-hint"></div></div>
-<div id="groupView" class="group-view" hidden></div><div id="commTooltip" class="comm-tooltip" role="dialog" aria-label="详细通信信息" data-pinned="false" hidden><div class="comm-tooltip-head"><strong id="commTooltipTitle"></strong><button id="closeCommTooltip" aria-label="关闭通信浮窗" title="关闭通信浮窗">×</button></div><div id="commTooltipContent" class="comm-tooltip-content"></div><div id="commTooltipStatus" class="comm-tooltip-status"></div></div>
+<div id="groupView" class="group-view" hidden></div><section id="scheduleView" class="schedule-view" aria-label="PP 流水线调度图" hidden>
+<div class="schedule-intro"><h2>PP 流水线调度</h2><p>从批量配置查看每个 stage 的前向、反向与等待。</p></div>
+<div class="schedule-form">
+<label for="scheduleGbs">GBS<small>全局批量大小</small><input id="scheduleGbs" type="number" min="1" step="1" value="32" inputmode="numeric"></label>
+<label for="scheduleMbs">MBS<small>单个微批量大小</small><input id="scheduleMbs" type="number" min="1" step="1" value="2" inputmode="numeric"></label>
+<label for="scheduleMode">调度方式<small>同步流水线，无交错</small><select id="scheduleMode"><option value="1f1b">1F1B · 前向与反向交替</option><option value="gpipe">GPipe · 全部前向后反向</option></select></label>
+<div class="schedule-context"><span>PP <b id="schedulePp">—</b></span><span>DP <b id="scheduleDp">—</b></span></div>
+</div>
+<p class="schedule-formula">微批次数 <code>MBN = GBS ÷ (MBS × DP)</code><span id="scheduleFormula"></span>。PP、DP 沿用左侧配置。</p>
+<div id="scheduleStats" class="schedule-stats" aria-live="polite">
+<div class="schedule-stat"><span>MBN · 微批次数</span><strong id="scheduleMbn">—</strong></div>
+<div class="schedule-stat"><span>总时间步</span><strong id="scheduleDuration">—</strong></div>
+<div class="schedule-stat"><span>空闲比例</span><strong id="scheduleBubble">—</strong></div>
+<div class="schedule-stat"><span>峰值未回传微批数</span><strong id="schedulePeak">—</strong></div>
+</div>
+<div id="scheduleError" class="schedule-error" role="alert" hidden></div>
+<div class="schedule-shell">
+<div class="schedule-controls"><div class="schedule-legend"><span><i></i> F · 前向</span><span class="backward"><i></i> B · 反向</span><span class="idle"><i></i> 空闲</span></div><div class="schedule-zoom"><span>时间缩放</span><button id="scheduleZoomOut" aria-label="缩小调度图">−</button><span id="scheduleZoomLabel">100%</span><button id="scheduleZoomIn" aria-label="放大调度图">＋</button><button id="scheduleZoomReset">1:1</button></div></div>
+<div id="scheduleBoard" class="schedule-board" tabindex="0" aria-label="PP 调度时间轴，可横向或纵向滚动"><svg id="scheduleSvg" xmlns="http://www.w3.org/2000/svg" font-family="Consolas,Microsoft YaHei,sans-serif" role="img" aria-label="PP 流水线调度"></svg></div>
+<div id="scheduleSelection" class="schedule-selection" aria-live="polite" data-pinned="false">悬停查看微批详情；单击可高亮该微批的全部前向与反向，单击空白取消。</div>
+</div>
+<p class="schedule-note">横轴为相对时间步，纵轴为 PP stage；F / B 后的数字是从 1 开始的微批编号。每个 stage 串行执行，后续任务等待前向激活或反向梯度就绪。</p>
+<p class="schedule-model-note">等时示意：各 stage 的 F、B 均占 1 步，不计通信、重计算及层数差异。空闲比例与未回传微批数用于比较调度结构，不代表实际性能或显存用量。支持 PP × MBN ≤ 65,536。</p>
+</section><div id="commTooltip" class="comm-tooltip" role="dialog" aria-label="详细通信信息" data-pinned="false" hidden><div class="comm-tooltip-head"><strong id="commTooltipTitle"></strong><button id="closeCommTooltip" aria-label="关闭通信浮窗" title="关闭通信浮窗">×</button></div><div id="commTooltipContent" class="comm-tooltip-content"></div><div id="commTooltipStatus" class="comm-tooltip-status"></div></div>
 </section>
 <aside class="detail" aria-label="模块详情"><button id="toggleDetail" class="panel-toggle" aria-label="收起模块与通信" aria-expanded="true" aria-controls="detailPanel" title="收起模块与通信"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="detailPanel" class="panel-body"><div class="detail-head"><h2>模块与通信</h2><button id="unpin" hidden>取消固定</button></div><div id="detailBody" class="detail-body"></div></div></aside>
 </main><div id="toast" class="toast" role="status" aria-live="polite"></div><div id="live" class="live-only" role="status" aria-live="polite"></div>
@@ -248,6 +274,116 @@ var XYModel=(()=>{
  return {TYPES,validateConfig,maskGroups,buildTopology,buildRelations,visibleSlice,buildStageLayout,cardAxisPosition,weightColor,routeCommunication,distributeLayers,domainScopes,expertOwnership,PALETTES,domainKey,domainColor,buildPipelineRelations,stageGeometry,bridgeRoutes,weightOwnership,collectiveBuses,routeCollective};
 })();
 </script>
+<script id="pipeline-model">
+'use strict';
+var XYPipeline=(()=>{
+ const MAX_CELLS=65536;
+ const integer=value=>(typeof value==='number'||typeof value==='string')&&String(value).trim()!==''?Number(value):NaN;
+ function validateBatch(raw={}){
+  const config={},errors=[];
+  for(const [key,label] of [['gbs','GBS'],['mbs','MBS'],['dp','DP'],['pp','PP']]){config[key]=integer(raw[key]);if(!Number.isSafeInteger(config[key])||config[key]<1)errors.push(label+' 必须为正的安全整数');}
+  config.mode=raw.mode??'1f1b';if(!['1f1b','gpipe'].includes(config.mode))errors.push('请选择 1F1B 或 GPipe 调度');
+  if(config.pp>4096)errors.push('PP size 不能超过 4096');
+  if(!errors.length){const denominator=config.mbs*config.dp;if(!Number.isSafeInteger(denominator))errors.push('MBS × DP 超过安全整数范围');else if(config.gbs%denominator!==0)errors.push('GBS 必须能被 MBS × DP 整除，不能取整生成微批次');else{config.mbn=config.gbs/denominator;if(config.mbn*config.pp>MAX_CELLS)errors.push('PP × MBN 不能超过 65,536，请减小批量或 PP size');}}
+  return {ok:errors.length===0,config,errors};
+ }
+ function buildSchedule({pp,mbn,mode='1f1b'}){
+  if(!Number.isSafeInteger(pp)||pp<1||pp>4096||!Number.isSafeInteger(mbn)||mbn<1||!['1f1b','gpipe'].includes(mode))throw new RangeError('调度参数无效');
+  if(pp*mbn>MAX_CELLS)throw new RangeError('PP × MBN 不能超过 65,536');
+  const count=2*pp*mbn,events=new Array(count),stages=Array.from({length:pp},()=>[]),successors=Array.from({length:count},()=>[]),pending=new Uint8Array(count);
+  const id=(s,m,phase)=>(s*mbn+m)*2+(phase==='bwd'?1:0);
+  for(let s=0;s<pp;s++){
+   const order=stages[s],push=(m,phase)=>{const task={id:id(s,m,phase),stage:s,microbatch:m,phase,start:0,end:0};events[task.id]=task;order.push(task);};
+   if(mode==='gpipe'){for(let m=0;m<mbn;m++)push(m,'fwd');for(let m=mbn-1;m>=0;m--)push(m,'bwd');}
+   else{const warmup=Math.min(pp-s-1,mbn),remaining=mbn-warmup;for(let m=0;m<warmup;m++)push(m,'fwd');for(let m=0;m<remaining;m++){push(warmup+m,'fwd');push(m,'bwd');}for(let m=remaining;m<mbn;m++)push(m,'bwd');}
+   for(let i=0;i<order.length;i++){
+    const task=order[i],deps=new Set(i?[order[i-1].id]:[]);
+    if(task.phase==='fwd'&&s>0)deps.add(id(s-1,task.microbatch,'fwd'));
+    if(task.phase==='bwd'){deps.add(id(s,task.microbatch,'fwd'));if(s<pp-1)deps.add(id(s+1,task.microbatch,'bwd'));}
+    pending[task.id]=deps.size;for(const dep of deps)successors[dep].push(task.id);
+   }
+  }
+  const ready=[];for(let i=0;i<count;i++)if(!pending[i])ready.push(i);
+  let duration=0;for(let cursor=0;cursor<ready.length;cursor++){
+   const task=events[ready[cursor]];task.end=task.start+1;duration=Math.max(duration,task.end);
+   for(const next of successors[task.id]){events[next].start=Math.max(events[next].start,task.end);if(--pending[next]===0)ready.push(next);}
+  }
+  if(ready.length!==count)throw new Error('调度依赖出现循环');
+  const peakOutstanding=stages.map(row=>{let outstanding=0,peak=0;for(const task of row){outstanding+=task.phase==='fwd'?1:-1;peak=Math.max(peak,outstanding);}return peak;}),busyTime=count,utilization=busyTime/(pp*duration);
+  return {pp,mbn,mode,events,stages,duration,busyTime,utilization,bubbleRate:1-utilization,peakOutstanding};
+ }
+ return {validateBatch,buildSchedule};
+})();
+</script>
+<script id="pipeline-app">
+'use strict';
+var PPScheduler=(()=>{
+ const $=id=>document.getElementById(id),view=$('scheduleView'),board=$('scheduleBoard'),svg=$('scheduleSvg'),LEFT=116,TOP=44,ROW=58;
+ const state={config:null,key:'',model:null,step:52,microbatch:null,event:null},idle='悬停查看微批详情；单击可高亮该微批的全部前向与反向，单击空白取消。';
+ let frame=0;
+ function settings(){return {gbs:Number($('scheduleGbs').value),mbs:Number($('scheduleMbs').value),mode:$('scheduleMode').value};}
+ function restore(data){if(!data)return;$('scheduleGbs').value=data.gbs;$('scheduleMbs').value=data.mbs;$('scheduleMode').value=data.mode??'1f1b';state.key='';}
+ function resetInfo(){$('scheduleSelection').textContent=idle;$('scheduleSelection').dataset.pinned='false';}
+ function update(config){state.config=config?{pp:config.pp,dp:config.dp}:null;if(!view.hidden)render();}
+ function clear(errors){state.model=null;state.microbatch=null;state.event=null;svg.innerHTML='';board.hidden=true;$('scheduleError').hidden=false;$('scheduleError').textContent=errors.join('；');for(const id of ['scheduleMbn','scheduleDuration','scheduleBubble','schedulePeak'])$(id).textContent='—';resetInfo();}
+ function render(){
+  if(view.hidden)return;
+  $('schedulePp').textContent=state.config?.pp??'—';$('scheduleDp').textContent=state.config?.dp??'—';
+  if(!state.config){state.key='';$('scheduleFormula').textContent='';clear(['请先完成左侧并行配置，PP 和 DP 有效后自动生成调度图。']);return;}
+  const raw={...settings(),...state.config},valid=XYPipeline.validateBatch(raw);
+  if(!valid.ok){state.key='';$('scheduleFormula').textContent='';clear(valid.errors);return;}
+  const key=JSON.stringify(raw);
+  if(key!==state.key||!state.model){try{state.model=XYPipeline.buildSchedule(valid.config);}catch(error){clear([error.message]);return;}state.key=key;state.microbatch=null;state.event=null;board.scrollLeft=0;board.scrollTop=0;resetInfo();}
+  const m=state.model;$('scheduleError').hidden=true;board.hidden=false;board.style.height=Math.min(520,TOP+m.pp*ROW+12)+'px';
+  $('scheduleMbn').textContent=m.mbn;$('scheduleDuration').textContent=m.duration;$('scheduleBubble').textContent=(m.bubbleRate*100).toFixed(1)+'%';$('schedulePeak').textContent=Math.max(...m.peakOutstanding);
+  $('scheduleFormula').textContent=' = '+valid.config.gbs+' ÷ ('+valid.config.mbs+' × '+valid.config.dp+') = '+m.mbn;
+  draw();
+ }
+ function dimensions(full=false){const m=state.model;return {width:Math.max(full?0:board.clientWidth,LEFT+m.duration*state.step+20),height:Math.max(full?0:board.clientHeight,TOP+m.pp*ROW+12)};}
+ function taskMarkup(task){
+  const chosen=state.microbatch===task.microbatch,dim=state.microbatch!==null&&!chosen,x=LEFT+task.start*state.step+2,y=TOP+task.stage*ROW+10,width=Math.max(2,state.step-4),fwd=task.phase==='fwd',fill=fwd?'#d8edf1':'#fff0d7',stroke=chosen?'#163047':fwd?'#187f96':'#d08a25',label=(fwd?'F':'B')+(task.microbatch+1),title='PP stage '+task.stage+'，微批 '+(task.microbatch+1)+'，'+(fwd?'前向':'反向')+'，时间步 '+task.start+'–'+task.end;
+  return '<g class="schedule-task" id="scheduleTask-'+task.id+'" data-schedule-event="'+task.id+'" data-stage="'+task.stage+'" data-microbatch="'+task.microbatch+'" data-phase="'+task.phase+'" data-selected="'+chosen+'" role="button" tabindex="0" aria-pressed="'+chosen+'" aria-label="'+title+'" opacity="'+(dim?'.26':'1')+'"><title>'+title+'</title><rect x="'+x+'" y="'+y+'" width="'+width+'" height="36" rx="4" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(chosen?2:1.1)+'"/>'+(state.step>=28?'<text x="'+(x+width/2)+'" y="'+(y+23)+'" text-anchor="middle" fill="'+(fwd?'#155c6d':'#83530c')+'" font-size="'+(label.length>4?9:11)+'" font-weight="600" pointer-events="none">'+label+'</text>':'')+'</g>';
+ }
+ function scene(full=false){
+  const m=state.model,{width,height}=dimensions(full),sx=full?0:board.scrollLeft,sy=full?0:board.scrollTop,vw=full?width:board.clientWidth,vh=full?height:board.clientHeight;
+  const firstStage=full?0:Math.max(0,Math.floor((sy-TOP)/ROW)-1),lastStage=full?m.pp:Math.min(m.pp,Math.ceil((sy+vh-TOP)/ROW)+1),startTime=full?0:Math.max(0,Math.floor((sx-LEFT)/state.step)-1),endTime=full?m.duration:Math.min(m.duration,Math.ceil((sx+vw-LEFT)/state.step)+1),stride=Math.max(1,Math.ceil(35/state.step));
+  const parts=[];
+  for(let s=firstStage;s<lastStage;s++)parts.push('<rect x="'+Math.max(LEFT,sx)+'" y="'+(TOP+s*ROW)+'" width="'+Math.max(0,Math.min(width,sx+vw)-Math.max(LEFT,sx))+'" height="'+ROW+'" fill="'+(s%2?'#f5f8fa':'#eef3f7')+'"/><line x1="'+sx+'" x2="'+(sx+vw)+'" y1="'+(TOP+(s+1)*ROW)+'" y2="'+(TOP+(s+1)*ROW)+'" stroke="#dce5ed"/>');
+  for(let t=Math.floor(startTime/stride)*stride;t<=endTime;t+=stride){const x=LEFT+t*state.step;parts.push('<line x1="'+x+'" x2="'+x+'" y1="'+Math.max(TOP,sy)+'" y2="'+Math.min(height,sy+vh)+'" stroke="#dce5ed" stroke-dasharray="2 4"/>');}
+  for(let s=firstStage;s<lastStage;s++){
+   const row=m.stages[s];let lo=0,hi=row.length;
+   while(lo<hi){const mid=(lo+hi)>>1;if(row[mid].end<=startTime)lo=mid+1;else hi=mid;}
+   for(let i=full?0:lo;i<row.length&&(full||row[i].start<=endTime);i++)parts.push(taskMarkup(row[i]));
+  }
+  parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+LEFT+'" height="'+vh+'" fill="#fff"/><line x1="'+(sx+LEFT)+'" x2="'+(sx+LEFT)+'" y1="'+sy+'" y2="'+(sy+vh)+'" stroke="#cfdee8"/>');
+  for(let s=firstStage;s<lastStage;s++)parts.push('<g class="schedule-stage-label" data-stage="'+s+'"><text x="'+(sx+15)+'" y="'+(TOP+s*ROW+24)+'" font-size="12" fill="#163047" font-weight="600">PP stage '+s+'</text><text x="'+(sx+15)+'" y="'+(TOP+s*ROW+43)+'" font-size="10" fill="#61768a">峰值 '+m.peakOutstanding[s]+' 微批</text></g>');
+  parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+vw+'" height="'+TOP+'" fill="#fff"/><line x1="'+sx+'" x2="'+(sx+vw)+'" y1="'+(sy+TOP)+'" y2="'+(sy+TOP)+'" stroke="#cfdee8"/>');
+  for(let t=Math.floor(startTime/stride)*stride;t<=endTime;t+=stride){const x=LEFT+t*state.step;if(x>=sx+LEFT)parts.push('<text x="'+(x+4)+'" y="'+(sy+27)+'" font-size="11" fill="#61768a">'+t+'</text>');}
+  parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+LEFT+'" height="'+TOP+'" fill="#fff"/><text x="'+(sx+15)+'" y="'+(sy+27)+'" fill="#61768a" font-size="10">stage / 时间步</text>');
+  return parts.join('');
+ }
+ function draw(){if(!state.model||view.hidden||board.hidden)return;const size=dimensions();svg.setAttribute('width',size.width);svg.setAttribute('height',size.height);svg.innerHTML=scene();$('scheduleZoomLabel').textContent=Math.round(state.step/52*100)+'%';}
+ function requestDraw(){if(frame||view.hidden)return;frame=requestAnimationFrame(()=>{frame=0;draw();});}
+ function describe(task){if(!task)return;$('scheduleSelection').textContent='PP stage '+task.stage+' · 微批 '+(task.microbatch+1)+' · '+(task.phase==='fwd'?'前向 F':'反向 B')+' · 时间步 '+task.start+'–'+task.end+' · 本 stage 峰值 '+state.model.peakOutstanding[task.stage]+' 个未回传微批'+(state.microbatch!==null?'（已固定，再次点击该微批或空白取消）':'');$('scheduleSelection').dataset.pinned=String(state.microbatch!==null);}
+ function choose(element){
+  if(!state.model)return;const task=element?state.model.events[Number(element.dataset.scheduleEvent)]:null;
+  if(!task||state.microbatch===task.microbatch){state.microbatch=null;state.event=null;resetInfo();}else{state.microbatch=task.microbatch;state.event=task.id;describe(task);}draw();
+  if(element)document.getElementById('scheduleTask-'+element.dataset.scheduleEvent)?.focus({preventScroll:true});
+ }
+ board.addEventListener('scroll',requestDraw,{passive:true});
+ board.addEventListener('pointermove',event=>{if(state.microbatch!==null||!state.model)return;const element=event.target.closest('[data-schedule-event]');if(element)describe(state.model.events[Number(element.dataset.scheduleEvent)]);});
+ board.addEventListener('pointerleave',()=>{if(state.microbatch===null)resetInfo();});
+ board.addEventListener('click',event=>choose(event.target.closest('[data-schedule-event]')));
+ board.addEventListener('keydown',event=>{if(event.key==='Escape'){state.microbatch=null;state.event=null;resetInfo();draw();event.stopPropagation();}else if((event.key==='Enter'||event.key===' ')&&event.target.closest('[data-schedule-event]')){event.preventDefault();choose(event.target.closest('[data-schedule-event]'));}});
+ for(const id of ['scheduleGbs','scheduleMbs'])$(id).addEventListener('input',render);$('scheduleMode').addEventListener('change',render);
+ function zoom(step){const before=state.step;state.step=Math.max(4,Math.min(120,step));const left=Math.max(0,(board.scrollLeft+LEFT)/before*state.step-LEFT);draw();board.scrollLeft=left;requestDraw();}
+ $('scheduleZoomOut').addEventListener('click',()=>zoom(state.step/1.25));$('scheduleZoomIn').addEventListener('click',()=>zoom(state.step*1.25));$('scheduleZoomReset').addEventListener('click',()=>zoom(52));
+ new ResizeObserver(requestDraw).observe(board);
+ function exportSvg(){if(!state.model)return null;const {width,height}=dimensions(true);return '<svg xmlns="http://www.w3.org/2000/svg" font-family="Consolas,Microsoft YaHei,sans-serif" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'"><title>PP 调度图 '+(state.model.mode==='gpipe'?'GPipe':'1F1B')+' · PP '+state.model.pp+' · MBN '+state.model.mbn+'</title><desc>各 stage 的前向、反向均为 1 个相对时间步；不计通信耗时。</desc>'+scene(true)+'</svg>';}
+ return {update,render,settings,restore,exportSvg};
+})();
+
+</script>
 <script id="app">
 'use strict';
 (()=>{
@@ -330,6 +466,7 @@ var XYModel=(()=>{
   $('live').textContent='配置有效，'+v.config.total+' 张卡，DP '+dp;
  }
  function renderInvalid(errors){
+  PPScheduler.update(null);
   $('summary').innerHTML='<span class="summary-tag invalid-badge">配置待完成</span><span>补全左侧参数后自动生成当前结果</span>';
   $('board').innerHTML='<div class="empty"><div class="empty-symbol" aria-hidden="true"><i></i><i></i></div><h2>把并行配置变成可查看的权重</h2><p>填写每个 PP stage 的层数，或载入示例开始探索。<br>模块槽位表示本地权重归属，颜色深浅表示 PP stage。</p><ul class="error-list">'+errors.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><div class="btn-row"><button class="primary" data-preset="small">载入 32 卡示例</button><button data-preset="large">载入 4096 卡示例</button></div></div>';
   $('groupView').innerHTML='<div class="empty"><h2>通信组等待有效配置</h2><p>完整卡拓扑通过校验后，七类通信组会在这里显示。</p></div>';
@@ -341,7 +478,7 @@ var XYModel=(()=>{
  function renderAll(){
   if(!S.t)return;const c=S.t.config;
   $('summary').innerHTML='<span>总卡数 <b>'+c.total+'</b></span><span>DP <b>'+c.dp+'</b></span><span>专家副本 <b>'+(c.experts?c.expertReplicas:'—')+'</b></span><span class="summary-tag">'+c.tp+' TP × '+c.cp+' CP × '+c.dp+' DP × '+c.pp+' PP</span>';
-  $('rankInput').max=c.total-1;$('saveSvg').disabled=false;renderStages();renderDiagram();renderGroups();renderDetail();setView(S.view);
+  PPScheduler.update(c);$('rankInput').max=c.total-1;$('saveSvg').disabled=false;renderStages();renderDiagram();renderGroups();renderDetail();setView(S.view);
  }
  function renderStages(){
   if(!S.t)return;const c=S.t.config,pages=Math.ceil(c.pp/32);S.stageListPage=Math.min(pages-1,S.stageListPage);
@@ -537,7 +674,7 @@ var XYModel=(()=>{
   for(let i=S.groupPage*6;i<Math.min(all.length,(S.groupPage+1)*6);i++){const members=all[i],module=S.groupType==='EP'||S.groupType==='EXPERT'?c.experts?'moe':'att':'att';html+='<div class="members-card"><strong>'+names[S.groupType]+' G'+i+'</strong><span class="muted">'+members.length+' 卡'+(members.length===1?' · 单卡组，无跨卡通信':'')+'</span>'+rankList(members,module,'g-'+S.groupType+'-'+i)+'</div>';}
   $('groupView').innerHTML=html;
  }
- function setView(view){const changed=S.view!==view;S.view=view;$('diagramView').hidden=view!=='diagram';$('groupView').hidden=view!=='groups';document.querySelectorAll('[data-view]').forEach(e=>{const active=e.dataset.view===view;e.classList.toggle('active',active);e.setAttribute('aria-current',active?'page':'false');});if(changed&&view==='diagram'&&S.t)renderDiagram();positionCommTooltip();}
+ function setView(view){const changed=S.view!==view;S.view=view;$('diagramView').hidden=view!=='diagram';$('groupView').hidden=view!=='groups';$('scheduleView').hidden=view!=='schedule';$('parallelToolbar').hidden=view==='schedule';document.querySelector('.app').classList.toggle('schedule-mode',view==='schedule');if(view==='schedule')PPScheduler.render();document.querySelectorAll('[data-view]').forEach(e=>{const active=e.dataset.view===view;e.classList.toggle('active',active);e.setAttribute('aria-current',active?'page':'false');});if(changed&&view==='diagram'&&S.t)renderDiagram();positionCommTooltip();}
  function rememberDetail(){
   if(!S.active)return;const key=S.active.rank+':'+S.active.module;
   S.detailStates[key]={pages:{...S.rankPages},opened:[...$('detailBody').querySelectorAll('details[open]')].map(e=>e.dataset.relation),scroll:document.querySelector('.detail').scrollTop,bodyScroll:$('detailBody').scrollTop};
@@ -578,7 +715,7 @@ var XYModel=(()=>{
  }
  function loadConfig(data){
   clearTimeout(timer);for(const k of ['total','layers','experts','heads','tp','cp','pp','ep'])$(k).value=data[k]??'';
-  S.counts=data.layerCounts.map(String);S.previousPP=Number(data.pp);S.selected=new Set([0,Number(data.pp)-1]);S.layerPage=0;S.stageListPage=0;S.block=0;S.cardPage=0;S.zoom=1;S.active=null;S.pinned=false;S.fixed=null;S.detailStates={};S.rankPages={};
+  PPScheduler.restore(data.schedule);S.counts=data.layerCounts.map(String);S.previousPP=Number(data.pp);S.selected=new Set([0,Number(data.pp)-1]);S.layerPage=0;S.stageListPage=0;S.block=0;S.cardPage=0;S.zoom=1;S.active=null;S.pinned=false;S.fixed=null;S.detailStates={};S.rankPages={};
   $('rankInput').value='';$('board').scrollLeft=0;$('board').scrollTop=0;
   $('extend').checked=data.extend===true;S.priorDispatcher=data.dispatcher==='AllGather'?'AllGather':'AllToAll';setDispatcher(S.priorDispatcher);S.palette=M.PALETTES.some(p=>p.id===data.palette)?data.palette:'contrast';$('paletteSelect').value=S.palette;S.domains=null;S.frameSelection=null;S.selectionMode='module';$('sp').checked=data.sp===true;$('distributed_optimizer').checked=(data.distributed_optimizer??data.optimizer)===true;syncModes();renderLayerRows();refresh();
  }
@@ -640,11 +777,12 @@ var XYModel=(()=>{
  async function toggleFullscreen(){if(fullscreenPending)return;fullscreenPending=true;stopPan();const workspace=document.querySelector('.workspace');try{if(S.fullscreen){if(document.fullscreenElement){await document.exitFullscreen();}else{workspace.classList.remove('is-fullscreen');fullscreenState(false);}}else{if(workspace.requestFullscreen){try{await workspace.requestFullscreen();}catch{workspace.classList.add('is-fullscreen');fullscreenState(true);}}else{workspace.classList.add('is-fullscreen');fullscreenState(true);}}}finally{fullscreenPending=false;}}
  $('fullscreenBtn').addEventListener('click',toggleFullscreen);document.addEventListener('fullscreenchange',()=>{const on=document.fullscreenElement===document.querySelector('.workspace');if(!on)document.querySelector('.workspace').classList.remove('is-fullscreen');fullscreenState(on);});
  for(const [id,side,label] of [['toggleConfig','left','并行配置'],['toggleDetail','right','模块与通信']])$(id).addEventListener('click',()=>{const collapsed=document.querySelector('.app').classList.toggle(side+'-collapsed');$(id).setAttribute('aria-expanded',String(!collapsed));$(id).setAttribute('aria-label',(collapsed?'展开':'收起')+label);$(id).title=(collapsed?'展开':'收起')+label;requestAnimationFrame(()=>{if(S.t)renderDiagram();positionCommTooltip();});});
- $('exportBtn').addEventListener('click',()=>{const r=raw(),v=M.validateConfig(r);if(!v.ok){toast('请先完成有效配置再导出');return;}download(new Blob([JSON.stringify({version:1,...v.config,...options(),phases:undefined},null,2)],{type:'application/json'}),'xy-train-config.json');});
+ $('exportBtn').addEventListener('click',()=>{const r=raw(),v=M.validateConfig(r);if(!v.ok){toast('请先完成有效配置再导出');return;}const schedule=PPScheduler.settings(),batch=XYPipeline.validateBatch({...schedule,pp:v.config.pp,dp:v.config.dp});if(!batch.ok&&S.view==='schedule'){toast(batch.errors.join('；'));return;}if(!batch.ok)toast('配置已导出；批量设置无效，未包含 PP 调度参数');download(new Blob([JSON.stringify({version:1,...v.config,...options(),...(batch.ok?{schedule}:{}),phases:undefined},null,2)],{type:'application/json'}),'xy-train-config.json');});
  $('importBtn').addEventListener('click',()=>$('fileInput').click());$('fileInput').addEventListener('change',async e=>{
-  const file=e.target.files[0];if(!file)return;try{if(file.size>1048576)throw Error('配置文件不能超过 1 MB');const data=JSON.parse(await file.text());const v=M.validateConfig(data);if(!v.ok)throw Error(v.errors.join('；'));loadConfig({...v.config,dispatcher:data.dispatcher,sp:data.sp,optimizer:data.optimizer,palette:data.palette});toast('配置已导入并通过校验');}catch(err){toast('导入失败：'+err.message);}finally{e.target.value='';}
+  const file=e.target.files[0];if(!file)return;try{if(file.size>1048576)throw Error('配置文件不能超过 1 MB');const data=JSON.parse(await file.text());const v=M.validateConfig(data);if(!v.ok)throw Error(v.errors.join('；'));if(data.schedule){const batch=XYPipeline.validateBatch({...data.schedule,pp:v.config.pp,dp:v.config.dp});if(!batch.ok)throw Error(batch.errors.join('；'));}loadConfig({...v.config,dispatcher:data.dispatcher,sp:data.sp,optimizer:data.optimizer,palette:data.palette,schedule:data.schedule});toast('配置已导入并通过校验');}catch(err){toast('导入失败：'+err.message);}finally{e.target.value='';}
  });
  $('saveSvg').addEventListener('click',()=>{
+  if(S.view==='schedule'){const content=PPScheduler.exportSvg();if(!content){toast('请先输入有效的批量配置');return;}download(new Blob([content],{type:'image/svg+xml;charset=utf-8'}),'pp-schedule.svg');return;}
   if(!S.t)return;let copy;
   try{renderDiagram({top:0,height:Infinity});copy=$('weightSvg').cloneNode(true);copy.setAttribute('width',boardSize.width);copy.setAttribute('height',boardSize.height);}
   finally{renderDiagram();}
