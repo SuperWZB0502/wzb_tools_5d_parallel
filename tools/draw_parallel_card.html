@@ -356,7 +356,7 @@ var XYPipeline=(()=>{
 var PPScheduler=(()=>{
  const $=id=>document.getElementById(id),view=$('scheduleView'),board=$('scheduleBoard'),svg=$('scheduleSvg'),TOP=70,ROW=68,SELECT='#163047';
  const state={config:null,key:'',model:null,step:52,microbatch:null,event:null,height:null,chunkPage:0,sequence:[],overview:[],fullscreen:false},idle='悬停查看微批详情；单击可高亮该微批并显示执行顺序箭头，单击空白取消。';
- const phaseNames={warmup:'warmup',steady:'1F1B',cooldown:'cooldown',forward:'全部前向',backward:'全部反向'},phaseColors={warmup:'#3d7650',steady:'#9d4c55',cooldown:'#70488e',forward:'#3d7650',backward:'#70488e'};
+ const phaseNames={warmup:'warmup',steady:'1F1B',cooldown:'cooldown',forward:'全部前向',backward:'全部反向'},phaseColors={warmup:'#617181',steady:'#617181',cooldown:'#617181',forward:'#617181',backward:'#617181'};
  let frame=0;
  const fmt=n=>Number(n.toPrecision(10)).toLocaleString('en-US',{useGrouping:false,maximumFractionDigits:6});
  function settings(){return {gbs:Number($('scheduleGbs').value),mbs:Number($('scheduleMbs').value),mode:$('scheduleMode').value,backwardRatio:Number($('scheduleBackwardRatio').value),vpp:$('scheduleVppEnabled').checked?Number($('scheduleVpp').value):1,showBoundaries:$('scheduleBoundaries').checked};}
@@ -381,7 +381,7 @@ var PPScheduler=(()=>{
  }
  function applyHeight(){if(!state.model)return;const height=state.height??(TOP+Math.min(state.model.pp,16)*ROW+12);board.style.height=height+'px';$('scheduleResize').setAttribute('aria-valuenow',String(Math.round(height)));}
  function pixels(){const m=state.model;return Math.min(state.step/m.referenceDuration,8000000/m.duration);}
- const phaseBackgrounds={warmup:['#e5f3e8','#cce7d2'],steady:['#fce9e9','#f4d1d1'],cooldown:['#e5d8f1','#d4bde7'],forward:['#e5f3e8','#cce7d2'],backward:['#e5d8f1','#d4bde7']};
+ const steadyBackground='#e5e7eb';
  function overview(m){
   const warmupEnd=m.stages[m.pp-1].find(e=>e.phase==='fwd').start;let lastForward=0;for(const e of m.events)if(e.phase==='fwd')lastForward=Math.max(lastForward,e.end);
   const regions=m.mode==='gpipe'?[{segment:'forward',start:0,end:lastForward},{segment:'backward',start:lastForward,end:m.duration}]:m.pp===1?[{segment:'steady',start:0,end:m.duration}]:[{segment:'warmup',start:0,end:warmupEnd},{segment:'steady',start:warmupEnd,end:lastForward},{segment:'cooldown',start:lastForward,end:m.duration}];
@@ -426,14 +426,15 @@ var PPScheduler=(()=>{
   const firstStage=full?0:Math.max(0,Math.floor((sy-TOP)/ROW)-1),lastStage=full?m.pp:Math.min(m.pp,Math.ceil((sy+vh-TOP)/ROW)+1),startTime=full?0:Math.max(0,(sx-left)/px-1),endTime=full?m.duration:Math.min(m.duration,(sx+vw-left)/px+1);
   const target=Math.max(55/px,full?m.duration/2000:0),power=10**Math.floor(Math.log10(target)),stride=[1,2,5,10].find(n=>n*power>=target)*power,ticks=[];for(let i=Math.floor(startTime/stride),n=Math.ceil(endTime/stride);i<=n;i++)ticks.push(i*stride);
   const parts=[];
-  if($('scheduleBoundaries').checked)for(const region of state.overview)parts.push('<rect data-schedule-background="'+region.segment+'" data-start="'+region.start+'" data-end="'+region.end+'" x="'+(left+region.start*px)+'" y="'+TOP+'" width="'+((region.end-region.start)*px)+'" height="'+(m.pp*ROW)+'" fill="'+phaseBackgrounds[region.segment][0]+'" pointer-events="none"/>');
-  for(let s=firstStage;s<lastStage;s++)parts.push('<rect x="'+Math.max(left,sx)+'" y="'+(TOP+s*ROW)+'" width="'+Math.max(0,Math.min(width,sx+vw)-Math.max(left,sx))+'" height="'+ROW+'" fill="'+($('scheduleBoundaries').checked?'none':s%2?'#f5f8fa':'#eef3f7')+'"/><line x1="'+sx+'" x2="'+(sx+vw)+'" y1="'+(TOP+(s+1)*ROW)+'" y2="'+(TOP+(s+1)*ROW)+'" stroke="#dce5ed"/>');
+  for(let s=firstStage;s<lastStage;s++)parts.push('<rect x="'+Math.max(left,sx)+'" y="'+(TOP+s*ROW)+'" width="'+Math.max(0,Math.min(width,sx+vw)-Math.max(left,sx))+'" height="'+ROW+'" fill="'+(s%2?'#f5f8fa':'#eef3f7')+'"/>');
+  if($('scheduleBoundaries').checked)for(const region of state.overview)if(region.segment==='steady')parts.push('<rect data-schedule-background="steady" data-start="'+region.start+'" data-end="'+region.end+'" x="'+(left+region.start*px)+'" y="'+TOP+'" width="'+((region.end-region.start)*px)+'" height="'+(m.pp*ROW)+'" fill="'+steadyBackground+'" pointer-events="none"/>');
+  for(let s=firstStage;s<lastStage;s++)parts.push('<line x1="'+sx+'" x2="'+(sx+vw)+'" y1="'+(TOP+(s+1)*ROW)+'" y2="'+(TOP+(s+1)*ROW)+'" stroke="#dce5ed"/>');
   for(const t of ticks){const x=left+t*px;parts.push('<line x1="'+x+'" x2="'+x+'" y1="'+Math.max(TOP,sy)+'" y2="'+Math.min(height,sy+vh)+'" stroke="#dce5ed" stroke-dasharray="2 4"/>');}
   for(let s=firstStage;s<lastStage;s++){const row=m.stages[s];let lo=0,hi=row.length;while(lo<hi){const mid=(lo+hi)>>1;if(row[mid].end<=startTime)lo=mid+1;else hi=mid;}for(let i=full?0:lo;i<row.length&&(full||row[i].start<=endTime);i++)parts.push(taskMarkup(row[i],left));}
   if($('scheduleBoundaries').checked)for(let i=1;i<state.overview.length;i++){const time=state.overview[i].start,x=left+time*px;parts.push('<line data-schedule-boundary="'+fmt(time)+'" x1="'+x+'" x2="'+x+'" y1="'+Math.max(TOP,sy+TOP)+'" y2="'+Math.min(height-12,TOP+m.pp*ROW)+'" stroke="#526678" stroke-width="1.8" stroke-dasharray="7 5" pointer-events="none"/>');}
   parts.push(arrows(left,sx,sy,vw,vh,full));
   parts.push('<rect x="'+sx+'" y="'+sy+'" width="'+vw+'" height="'+TOP+'" fill="#fff"/><line x1="'+sx+'" x2="'+(sx+vw)+'" y1="'+(sy+TOP)+'" y2="'+(sy+TOP)+'" stroke="#cfdee8"/>');
-  if($('scheduleBoundaries').checked)for(const region of state.overview){const x=left+region.start*px,w=(region.end-region.start)*px,color=phaseColors[region.segment],visibleStart=Math.max(x,sx+left),visibleEnd=Math.min(x+w,sx+vw),labelX=visibleEnd>visibleStart?(visibleStart+visibleEnd)/2:x+w/2;parts.push('<g data-schedule-region="'+region.segment+'"><title>'+phaseNames[region.segment]+' · '+fmt(region.start)+'–'+fmt(region.end)+'</title><rect x="'+x+'" y="'+sy+'" width="'+w+'" height="32" fill="'+phaseBackgrounds[region.segment][1]+'"/><text x="'+labelX+'" y="'+(sy+21)+'" text-anchor="middle" fill="'+color+'" font-size="12" font-weight="600">'+phaseNames[region.segment]+'</text></g>');}
+  if($('scheduleBoundaries').checked)for(const region of state.overview){const x=left+region.start*px,w=(region.end-region.start)*px,color=phaseColors[region.segment],visibleStart=Math.max(x,sx+left),visibleEnd=Math.min(x+w,sx+vw),labelX=visibleEnd>visibleStart?(visibleStart+visibleEnd)/2:x+w/2;parts.push('<g data-schedule-region="'+region.segment+'"><title>'+phaseNames[region.segment]+' · '+fmt(region.start)+'–'+fmt(region.end)+'</title><rect x="'+x+'" y="'+sy+'" width="'+w+'" height="32" fill="'+(region.segment==='steady'?steadyBackground:'#fff')+'"/><text x="'+labelX+'" y="'+(sy+21)+'" text-anchor="middle" fill="'+color+'" font-size="12" font-weight="600">'+phaseNames[region.segment]+'</text></g>');}
   for(const t of ticks){const x=left+t*px;if(x>=sx+left)parts.push('<text x="'+(x+4)+'" y="'+(sy+55)+'" font-size="11" fill="#61768a">'+fmt(t)+'</text>');}
   parts.push(tableMarkup({sx,sy,vh,firstStage,lastStage,full}));return parts.join('');
  }
