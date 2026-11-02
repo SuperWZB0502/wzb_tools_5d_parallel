@@ -356,7 +356,7 @@ var XYPipeline=(()=>{
 var PPScheduler=(()=>{
  const $=id=>document.getElementById(id),view=$('scheduleView'),board=$('scheduleBoard'),svg=$('scheduleSvg'),TOP=70,ROW=68,SELECT='#163047';
  const state={config:null,key:'',model:null,step:52,microbatch:null,event:null,height:null,chunkPage:0,sequence:[],overview:[],fullscreen:false},idle='悬停查看微批详情；单击可高亮该微批并显示执行顺序箭头，单击空白取消。';
- const phaseNames={warmup:'warmup',steady:'1F1B',cooldown:'cooldown',forward:'全部前向',backward:'全部反向'},phaseColors={warmup:'#68769e',steady:'#187f96',cooldown:'#a87130',forward:'#187f96',backward:'#a87130'};
+ const phaseNames={warmup:'warmup',steady:'1F1B',cooldown:'cooldown',forward:'全部前向',backward:'全部反向'},phaseColors={warmup:'#3d7650',steady:'#9d4c55',cooldown:'#70488e',forward:'#3d7650',backward:'#70488e'};
  let frame=0;
  const fmt=n=>Number(n.toPrecision(10)).toLocaleString('en-US',{useGrouping:false,maximumFractionDigits:6});
  function settings(){return {gbs:Number($('scheduleGbs').value),mbs:Number($('scheduleMbs').value),mode:$('scheduleMode').value,backwardRatio:Number($('scheduleBackwardRatio').value),vpp:$('scheduleVppEnabled').checked?Number($('scheduleVpp').value):1,showBoundaries:$('scheduleBoundaries').checked};}
@@ -381,7 +381,7 @@ var PPScheduler=(()=>{
  }
  function applyHeight(){if(!state.model)return;const height=state.height??(TOP+Math.min(state.model.pp,16)*ROW+12);board.style.height=height+'px';$('scheduleResize').setAttribute('aria-valuenow',String(Math.round(height)));}
  function pixels(){const m=state.model;return Math.min(state.step/m.referenceDuration,8000000/m.duration);}
- const phaseBackgrounds={warmup:['#fff8e6','#fff0c7'],steady:['#edf6fb','#deedf7'],cooldown:['#f5f0fb','#e9dff5'],forward:['#fff8e6','#fff0c7'],backward:['#f5f0fb','#e9dff5']};
+ const phaseBackgrounds={warmup:['#e5f3e8','#cce7d2'],steady:['#fce9e9','#f4d1d1'],cooldown:['#e5d8f1','#d4bde7'],forward:['#e5f3e8','#cce7d2'],backward:['#e5d8f1','#d4bde7']};
  function overview(m){
   const warmupEnd=m.stages[m.pp-1].find(e=>e.phase==='fwd').start;let lastForward=0;for(const e of m.events)if(e.phase==='fwd')lastForward=Math.max(lastForward,e.end);
   const regions=m.mode==='gpipe'?[{segment:'forward',start:0,end:lastForward},{segment:'backward',start:lastForward,end:m.duration}]:m.pp===1?[{segment:'steady',start:0,end:m.duration}]:[{segment:'warmup',start:0,end:warmupEnd},{segment:'steady',start:warmupEnd,end:lastForward},{segment:'cooldown',start:lastForward,end:m.duration}];
