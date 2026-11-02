@@ -6,10 +6,12 @@ The public temporary site is served from `http://176.122.133.178:8081/`.
 
 本目录是后续唯一维护目录，项目按用户要求使用 **GitHub 私有仓库**管理。
 
+私有仓库：<https://github.com/1114120549/xy-train-5d-site>
+
 - 页面源文件：`tools/draw_parallel_card.html`。
 - 设计与部署说明：`docs/`；回归测试：`tests/`。
 - 父目录中的旧页面、文档和测试保留为迁移前副本，后续不再编辑，避免两份源码分叉。
-- 本地 Git 的初始分支为 `main`。当前尚未关联 GitHub 远端，等待私仓地址/账号及可用认证；下方 Actions 配置也尚未在 GitHub 上验证。
+- 默认分支为 `main`，远端 `origin` 为 `https://github.com/1114120549/xy-train-5d-site.git`，已核实仓库为 private。下方 Actions 自动发布仍需配置部署凭据并验证。
 - 自动发布只上传 HTML；文档与测试留在私仓，不会被发布到网站目录。
 
 常规检查：在本目录执行 `git status` 查看变更；根据修改运行 `tests/` 中相关用例，再提交。推送之前确认远端仍为私有仓库，并确认是否会命中下面的自动发布条件。
@@ -22,7 +24,7 @@ Edit `tools/draw_parallel_card.html`, commit it, and push to `main`. The GitHub 
 
 ## GitHub repository configuration
 
-Create a **private** GitHub repository, push this directory's contents to its `main` branch, then add these settings:
+The **private** repository has been created at `1114120549/xy-train-5d-site`. Configure the following Actions settings before using automatic VPS deployment:
 
 | Type | Name | Value |
 | --- | --- | --- |

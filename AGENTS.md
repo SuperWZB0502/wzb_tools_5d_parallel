@@ -10,11 +10,16 @@
 ## 私仓和发布
 
 - 用户要求用 GitHub 私有仓库管理；创建或关联后核实远端为 private，再推送项目内容。
-- 当前本地 Git 已初始化；远端地址和 GitHub 认证仍待配置。未成功连接远端时，不声称已经上传或同步。
+- GitHub 私有仓库：`https://github.com/1114120549/xy-train-5d-site`，默认分支 `main`，远端名 `origin`。推送后核实实际远端提交，不只根据本地提交判断同步成功。
 - 读取现有远端与分支状态后再工作，不强制推送，不覆盖远端已有提交。
 - 保留 `.github/workflows/deploy.yml` 与 `infra/server-update.sh` 中的发布契约：推送 `main` 的 HTML/工作流变更触发发布，只上传 HTML，由 VPS 备份后原子替换入口。
 - 私钥、访问令牌、`.env` 等只放在受支持的凭据存储或 GitHub Actions Secrets 中，不加入 Git。
 - 配置过远端、Secrets、变量或发布方式后，及时同步 README 和本约定中的状态。
+
+## 本机 GitHub 工具
+
+- GitHub CLI 当前位于 `C:/Users/WZB/.local/share/xy-train-tools/github-cli/v2.103.3/bin/gh.exe`，已通过 GitHub 官方流程登录 `1114120549`。凭据由 CLI 管理，不读出或打印令牌。
+- 此 Windows 环境访问 GitHub 需沿用系统代理；Git 的代理仅配置在本地 `.git/config`。CLI 如遇网络超时，应读取并使用当前系统代理，不把代理配置或凭据写入跟踪文件。
 
 ## 验证
 
