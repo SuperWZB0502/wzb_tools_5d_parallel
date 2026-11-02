@@ -15,7 +15,9 @@
 - 保留 `.github/workflows/deploy.yml` 与 `infra/server-update.sh` 中的发布契约：推送 `main` 的 HTML/工作流变更触发发布，只上传 HTML，由 VPS 备份后原子替换入口。
 - 私钥、访问令牌、`.env` 等只放在受支持的凭据存储或 GitHub Actions Secrets 中，不加入 Git。
 - 配置过远端、Secrets、变量或发布方式后，及时同步 README 和本约定中的状态。
-- 已配置 Actions 变量 `VPS_HOST`/`VPS_USER` 及 `VPS_KNOWN_HOSTS` Secret；`VPS_SSH_KEY` 待服务器 agent 设置。自动部署尚未验收，不能把 Git 推送成功等同于 VPS 发布成功。
+- 已配置 Actions 变量 `VPS_HOST`/`VPS_USER` 及 `VPS_KNOWN_HOSTS`/`VPS_SSH_KEY` Secrets；服务器 agent 已于 2026-11-02 完成自动部署验收，成功记录为 `https://github.com/1114120549/xy-train-5d-site/actions/runs/41383821608`。
+- 用户已授权后续页面修改：完成修改并通过相关验证后，直接提交并推送至 `origin/main`，无需再次询问是否提交或发布；具体流程见 README 的“后续修改与自动发布约定”。
+- 页面/工作流变更推送后跟踪本次 Actions，并核对公网页面与对应提交是否一致；如实区分推送和上线状态。仅文档或测试变更不会自动发布。
 
 ## 本机 GitHub 工具
 
