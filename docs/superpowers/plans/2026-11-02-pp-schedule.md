@@ -56,8 +56,8 @@ Files: 同一 HTML（布局、样式、pipeline-app），`tests/pipeline-browser
 Files: `README.md`、`docs/website-introduction.md`。
 
 - [x] 运行现有模型及相关浏览器回归；检查截图，复核算法和边界。
-- [ ] 更新功能说明，提交推送 main，等待对应 Pages 运行成功。
-- [ ] 核对线上 SHA-256，并在公网浏览器运行新功能验收。
+- [x] 更新功能说明，提交推送 main，等待对应 Pages 运行成功。
+- [x] 核对线上 SHA-256，并在公网浏览器运行新功能验收。
 
 ## 调度依据
 
@@ -70,6 +70,14 @@ Files: `README.md`、`docs/website-introduction.md`。
 - 新浏览器测试先捕捉缺失标签，再完成 8 组场景；现有 11 个浏览器脚本的 115 项检查通过。
 - 回归修复：无效批量仅阻止调度页导出，其他视图仍可保存基础配置；导入省略 mode 时恢复默认 1F1B。两项均先复现失败，再验证通过。
 - 视图高度随 stage 数收紧；大图验证同时覆盖真实空闲区域与有任务的时间范围。
-- Pages 发布及公网验收待提交后进行。
+- Pages 已发布并完成公网验收。
 
 - 独立代码审查完成：缺省模式恢复和 SVG 全局字体泄漏均已通过失败复现、修复及复测，最终无遗留问题。审查额外验证 PP=1/MBN=65,536 与 PP=4,096/MBN=16，视窗 DOM 数量受控。
+
+## 发布验收
+
+- 功能提交：180fe56c88ded1690ca5b93e86f6643f3ced65fb。
+- Pages 运行成功：https://github.com/SuperWZB0502/wzb_tools_5d_parallel/actions/runs/41409063469
+- 公网 HTTPS 200，Content-Type 为 text/html; charset=utf-8。
+- 源文件与线上文件 SHA-256 均为 dcdc3cf7665bad860ddfa84a17e4726618b5bc395e1ad05dce848713917f67c5。
+- 线上调度浏览器 8 组验收及原功能公网检查通过；本地 53 项模型、115 项原浏览器检查与新调度检查均通过。
