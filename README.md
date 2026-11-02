@@ -1,57 +1,47 @@
-# XY-Train 5D parallel-card site
+# wzb_tools_5d_parallel
 
-The public temporary site is served from `http://176.122.133.178:8081/`.
+5D 并行权重切分与通信可视化工具，保持单 HTML、无外部运行依赖；可以在线访问，也可以保存 HTML 后离线使用。
 
-## 项目维护入口
-
-本目录是后续唯一维护目录，项目按用户要求使用 **GitHub 私有仓库**管理。
-
-私有仓库：<https://github.com/1114120549/xy-train-5d-site>
-
+- 网站：<https://superwzb0502.github.io/wzb_tools_5d_parallel/>
+- GitHub 公开仓库：<https://github.com/SuperWZB0502/wzb_tools_5d_parallel>
 - 页面源文件：`tools/draw_parallel_card.html`。
+- 默认分支：`main`；远端：`origin`。
 - 设计与部署说明：`docs/`；回归测试：`tests/`。
-- 父目录中的旧页面、文档和测试保留为迁移前副本，后续不再编辑，避免两份源码分叉。
-- 默认分支为 `main`，远端 `origin` 为 `https://github.com/1114120549/xy-train-5d-site.git`，已核实仓库为 private。Actions 自动发布已配置完成，并于 2026-11-02 验收通过。
-- 自动发布只上传 HTML；文档与测试留在私仓，不会被发布到网站目录。
 
-常规检查：在本目录执行 `git status` 查看变更；根据修改运行 `tests/` 中相关用例，再提交。推送之前确认远端仍为私有仓库，并确认是否会命中下面的自动发布条件。
+## 唯一维护目录
 
-首次导入提交使用 `[skip ci]`，用于初始化版本管理，不触发一次无部署凭据的发布。后续正常页面更新按下文流程提交和推送。
+本地正式工作目录仍为 `C:/Users/WZB/XY-Train-5D/xy-train-5d-site`，保留原本地目录名以兼容现有工作环境。父目录的旧页面、文档和测试是迁移前副本，不再编辑或双向同步。
 
-## Publish a change
+用户已于 2026-11-02 明确授权仓库公开，用于免费的 GitHub Pages；此前“必须保持私仓”的约定已被本次授权替代。不要在仓库中提交私钥、访问令牌、Secret、known_hosts 或其他凭据。
 
-Edit `tools/draw_parallel_card.html`, commit it, and push to `main`. The GitHub Actions workflow uploads only that file and invokes the VPS updater, which creates a timestamped backup then atomically replaces `/var/www/xy-train-5d/index.html`.
+## 后续修改与自动发布约定
 
-### 后续修改与自动发布约定
+用户已授权：以后提出页面修改意见后，由维护 agent 完成修改和相关验证，直接提交并推送至 `origin/main`，无需每次再次询问是否提交或发布。
 
-用户已授权：以后提出页面修改意见后，由维护 agent 在本仓库完成修改和相关验证，直接提交并推送至 GitHub 的 `main` 分支，无需每次再次询问是否提交或发布。
+1. 先核对本地和远端状态，保留用户及其他 agent 的已有修改；必要时同步远端，不强制推送。
+2. 只编辑本仓库的页面源文件，并执行与本次改动相关的检查。
+3. 验证通过后提交并推送；源文件变更会自动触发 `Deploy GitHub Pages`。
+4. 跟踪对应 Actions 运行，并从公网核对线上 HTML 与该提交源文件的 SHA-256，再报告提交、工作流和网站状态。推送成功不能代替上线验收。
 
-1. 先检查本地与远端状态，保留用户及其他 agent 的已有修改；必要时同步远端，不强制推送。
-2. 修改 `tools/draw_parallel_card.html` 并运行与本次改动相关的检查，验证通过后提交、推送到 `origin/main`。
-3. 页面变更推送后，`Deploy XY-Train 5D` 自动上传新版 HTML，由 VPS 备份旧版并原子替换线上入口。
-4. 维护 agent 应跟踪本次 Actions 运行，并核对公网页面与本次提交的 HTML 是否一致，再向用户报告提交、工作流和网站状态。若发布失败，应排查并如实报告，不能将推送成功视为上线成功。
+只有 `main` 推送且 `tools/draw_parallel_card.html` 发生变更时自动发布；仅文档、测试或工作流文件变化不会自动发布。需要重发时手动触发 `.github/workflows/pages.yml` 的 `workflow_dispatch`，也仅允许发布 `main`。
 
-自动触发条件是 `main` 分支中的 `tools/draw_parallel_card.html` 或 `.github/workflows/deploy.yml` 发生变更；仅修改 README、其他文档或测试不会自动发布。网站地址为 <http://176.122.133.178:8081/>。服务器 agent 已确认设置 `Cache-Control: no-cache`，更新后刷新即可查看新版，必要时使用 `Ctrl+F5` 强制刷新。
+## GitHub Pages 发布方式
 
-## GitHub repository configuration
+仓库 Settings → Pages 的 Source 为 **GitHub Actions**，未配置自定义域名，GitHub 默认 HTTPS 已启用。
 
-The **private** repository is `1114120549/xy-train-5d-site`. The following Actions settings are configured:
+`.github/workflows/pages.yml` 使用官方静态发布流程：检出源文件 → 原样复制为 `_site/index.html` 并加入 `.nojekyll` → 校验两份文件完全一致 → 上传 Pages artifact → 发布。产物只包含页面与 `.nojekyll`，不上传整个仓库，不安装 Node、Python 或应用构建依赖。权限限定为 `contents: read`、`pages: write`、`id-token: write`，并使用 concurrency 避免并发发布。
 
-| Type | Name | Value |
-| --- | --- | --- |
-| Actions variable | `VPS_HOST` | `176.122.133.178` |
-| Actions variable | `VPS_USER` | `codex` |
-| Actions secret | `VPS_SSH_KEY` | The private deployment key, including its header and footer lines |
-| Actions secret | `VPS_KNOWN_HOSTS` | `176.122.133.178 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINJHecqwruCuFXyL07Auyh82wetNqnwyB7lrxXRj0jVB` |
+首次手动部署已验收成功：[运行记录](https://github.com/SuperWZB0502/wzb_tools_5d_parallel/actions/runs/41390796809)。HTTPS 返回 200、Content-Type 为 HTML、页面字节与源文件一致，并通过真实 Edge 浏览器的绘图、通信浮窗、缩放、WASD、侧栏及全屏交互检查。迁移与后续版本的具体校验记录见 [Pages 部署记录](docs/pages-deployment.md)。
 
-`VPS_HOST`、`VPS_USER`、`VPS_KNOWN_HOSTS` 和 `VPS_SSH_KEY` 均已配置。服务器 agent 已于 2026-11-02 完成 SSH 自动发布及公网验收；[首次验收工作流](https://github.com/1114120549/xy-train-5d-site/actions/runs/41383821608)结果为成功。
+## VPS 回滚保留
 
-验收时仓库 HTML 与线上 HTML 的 SHA-256 均为 `0277197ba9561248e85646b18b4ae05e90aa25ce61fe15cd6012d99527a2fc9a`，公网返回 HTTP 200，页面备份位于 `/var/backups/xy-train-5d/20261102T033431Z`。这些是本次验收记录，后续页面更新应重新核对对应版本。
+Pages 首次验收通过后，旧 `.github/workflows/deploy.yml` 已在 GitHub 禁用，同时删除了其 push 触发条件，仅保留显式手动回滚入口。因此普通 `main` 推送只发布到 Pages，不会同时发布 VPS。
 
-服务器 agent 已确认部署使用项目专用 Ed25519 密钥，私钥通过文件写入 GitHub Secret；`codex` 仅可免密执行 `sudo /usr/local/sbin/xy-train-5d-update /tmp/xy-train-5d-upload.html`，发布脚本为 `root:root`、权限 `755`。更换部署凭据时仍通过安全渠道设置，不写入仓库或聊天正文。
+VPS 的现有站点、容器和备份保留，未执行服务器删除或清理。Actions 中的 `VPS_SSH_KEY`、`VPS_KNOWN_HOSTS` 和原变量也保留，待用户确认 Pages 稳定后再决定是否删除。
 
-Never add the SSH private key to a tracked file. The workflow is deliberately limited to reading repository contents and publishing the one HTML file.
+- 原站点：`http://176.122.133.178:8081/`，切换后不再自动更新。
+- 原入口：`/var/www/xy-train-5d/index.html`。
+- 备份目录：`/var/backups/xy-train-5d/`。
+- 更新脚本：`infra/server-update.sh`，服务器安装路径 `/usr/local/sbin/xy-train-5d-update`。
 
-## VPS recovery
-
-The active file is `/var/www/xy-train-5d/index.html`; timestamped backups are under `/var/backups/xy-train-5d/`. To roll back, copy a chosen backup to `index.html.new` and rename it to `index.html` in the same directory. No container restart is needed.
+确需回滚发布到 VPS 时，由维护者显式启用旧工作流，再手动触发指定版本。仅恢复线上文件时，可由服务器 agent 将选定备份复制到站点目录的 `index.html.new`，再原子替换 `index.html`。

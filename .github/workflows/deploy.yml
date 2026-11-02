@@ -1,11 +1,7 @@
-name: Deploy XY-Train 5D
+name: Manual VPS rollback deployment
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - tools/draw_parallel_card.html
-      - .github/workflows/deploy.yml
+  # Kept for explicit rollback only; the workflow is disabled in GitHub.
   workflow_dispatch:
 
 permissions:
