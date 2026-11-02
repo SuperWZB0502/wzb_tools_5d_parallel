@@ -15,6 +15,7 @@
 - 保留 `.github/workflows/deploy.yml` 与 `infra/server-update.sh` 中的发布契约：推送 `main` 的 HTML/工作流变更触发发布，只上传 HTML，由 VPS 备份后原子替换入口。
 - 私钥、访问令牌、`.env` 等只放在受支持的凭据存储或 GitHub Actions Secrets 中，不加入 Git。
 - 配置过远端、Secrets、变量或发布方式后，及时同步 README 和本约定中的状态。
+- 已配置 Actions 变量 `VPS_HOST`/`VPS_USER` 及 `VPS_KNOWN_HOSTS` Secret；`VPS_SSH_KEY` 待服务器 agent 设置。自动部署尚未验收，不能把 Git 推送成功等同于 VPS 发布成功。
 
 ## 本机 GitHub 工具
 

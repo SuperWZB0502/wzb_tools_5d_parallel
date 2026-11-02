@@ -33,6 +33,10 @@ The **private** repository has been created at `1114120549/xy-train-5d-site`. Co
 | Actions secret | `VPS_SSH_KEY` | The private deployment key, including its header and footer lines |
 | Actions secret | `VPS_KNOWN_HOSTS` | `176.122.133.178 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINJHecqwruCuFXyL07Auyh82wetNqnwyB7lrxXRj0jVB` |
 
+当前已设置 `VPS_HOST`、`VPS_USER` 和 `VPS_KNOWN_HOSTS`；`VPS_SSH_KEY` 尚未配置，自动发布链路还未运行验收。
+
+请由持有 VPS 部署专用私钥的服务器 agent 将其加入本仓库的 `VPS_SSH_KEY` Actions Secret，再验证现有 `production` 工作流与服务器更新命令。私钥通过 Secret 的安全输入渠道设置，不写入仓库或聊天正文。首次建仓只同步代码，没有修改 VPS 上的当前网站。
+
 Never add the SSH private key to a tracked file. The workflow is deliberately limited to reading repository contents and publishing the one HTML file.
 
 ## VPS recovery
