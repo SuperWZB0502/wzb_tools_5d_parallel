@@ -11,10 +11,12 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
   await page.locator('[data-view="schedule"]').click();
   await check('global phases have exactly two full-height separators and one header each',async()=>{
    assert.equal(await page.locator('[data-schedule-region="warmup"]').count(),1);assert.equal(await page.locator('[data-schedule-region="steady"]').count(),1);
-   assert.equal(await page.locator('[data-schedule-region="cooldown"]').count(),1);assert.equal(await page.locator('[data-schedule-boundary]').count(),2);assert.deepEqual(await page.locator('[data-schedule-boundary]').evaluateAll(es=>es.map(e=>Number(e.dataset.scheduleBoundary))),[4,46]);
+   assert.equal(await page.locator('[data-schedule-region="cooldown"]').count(),1);assert.equal(await page.locator('[data-schedule-boundary]').count(),2);assert.deepEqual(await page.locator('[data-schedule-boundary]').evaluateAll(es=>es.map(e=>Number(e.dataset.scheduleBoundary))),[2,46]);
+   const bands=page.locator('[data-schedule-background]');assert.equal(await bands.count(),3);assert.equal(new Set(await bands.evaluateAll(es=>es.map(e=>e.getAttribute('fill')))).size,3);assert.deepEqual(await bands.evaluateAll(es=>es.map(e=>[Number(e.dataset.start),Number(e.dataset.end)])),[[0,2],[2,46],[46,54]]);
+   assert.match(await page.evaluate(()=>PPScheduler.exportSvg()),/data-schedule-background=/);
    const line=page.locator('[data-schedule-boundary]').first();assert.equal(await line.getAttribute('data-stage'),null);
    assert.ok(Number(await line.getAttribute('y2'))-Number(await line.getAttribute('y1'))>=130);
-   await page.locator('#scheduleBoundaries').uncheck();assert.equal(await page.locator('[data-schedule-region]').count(),0);await page.locator('#scheduleBoundaries').check();
+   await page.locator('#scheduleBoundaries').uncheck();assert.equal(await page.locator('[data-schedule-region]').count(),0);assert.equal(await bands.count(),0);assert.doesNotMatch(await page.evaluate(()=>PPScheduler.exportSvg()),/data-schedule-background=/);await page.locator('#scheduleBoundaries').check();
   });
   await check('PP layers are table cells and forward/backward share a soft yellow hue',async()=>{
    const table=page.locator('[data-schedule-table]');assert.match(await table.textContent(),/PP stage/);assert.match(await table.textContent(),/层分布/);
@@ -26,7 +28,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    assert.equal(await page.locator('#schedulePp').innerText(),'8');
    const geometry=await page.locator('#scheduleBoard').evaluate(e=>({height:e.clientHeight,full:e.scrollHeight}));assert.ok(geometry.height>=geometry.full-1,'all eight stages must fit without vertical scrolling');
    assert.equal(await page.locator('.schedule-stage-label').count(),8);
-   await page.locator('#scheduleVppEnabled').check();assert.equal(await page.locator('#scheduleError').isVisible(),false);
+   await page.locator('#scheduleVppEnabled').check();assert.equal(await page.locator('#scheduleError').isVisible(),false);assert.equal(Number(await page.locator('[data-schedule-boundary]').first().getAttribute('data-schedule-boundary')),Number(await task(7,'fwd').first().getAttribute('data-start')));
    assert.equal(await page.locator('[data-schedule-stage-heading]').getAttribute('aria-rowspan'),'2');
    assert.deepEqual(await page.locator('[data-schedule-chunk-heading]').allTextContents(),['VPP 0','VPP 1']);
    assert.equal(await page.locator('[data-schedule-layer="0:0"]').textContent(),'1');assert.equal(await page.locator('[data-schedule-layer="0:1"]').textContent(),'1');
@@ -55,6 +57,13 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    const z=await page.locator('#scheduleZoomLabel').innerText(),b=await page.locator('#scheduleBoard').boundingBox();await page.mouse.move(b.x+b.width*.7,b.y+150);await page.keyboard.down('Control');await page.mouse.wheel(0,-120);await page.keyboard.up('Control');await page.waitForTimeout(60);assert.notEqual(await page.locator('#scheduleZoomLabel').innerText(),z);
    await page.keyboard.press('Escape');await page.waitForTimeout(100);assert.equal(await page.locator('#scheduleFullscreen').getAttribute('aria-pressed'),'false');
    await page.locator('[data-view="diagram"]').click();assert.equal(await page.locator('#fullscreenBtn').getAttribute('aria-pressed'),'false');await page.locator('[data-view="schedule"]').click();
+  });
+  await check('automatic height fits sixteen stages and drawing space can be expanded',async()=>{
+   const board=page.locator('#scheduleBoard'),initial=await board.evaluate(e=>e.clientHeight);assert.ok(initial>=1100);assert.equal(await page.locator('.schedule-stage-label').count(),16);
+   const top=await board.evaluate(e=>e.getBoundingClientRect().top+scrollY);await page.locator('#scheduleToggleSettings').click();assert.equal(await page.locator('#scheduleSettings').isVisible(),false);assert.ok(await board.evaluate(e=>e.getBoundingClientRect().top+scrollY)<top-150);
+   const handle=page.locator('#scheduleResize');await handle.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');assert.ok(await board.evaluate(e=>e.clientHeight)<initial-100);
+   await handle.scrollIntoViewIfNeeded();const box=await handle.boundingBox(),before=await board.evaluate(e=>e.clientHeight);await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2,box.y+box.height/2+150,{steps:10});await page.mouse.up();assert.ok(await board.evaluate(e=>e.clientHeight)>before+100);assert.equal(await page.evaluate(()=>document.activeElement.id),'scheduleResize');const dragged=await board.evaluate(e=>e.clientHeight);await page.keyboard.press('ArrowUp');assert.ok(await board.evaluate(e=>e.clientHeight)<dragged-60);
+   await page.locator('#scheduleAutoHeight').click();assert.equal(await board.evaluate(e=>e.clientHeight),initial);await page.locator('#scheduleToggleSettings').click();assert.equal(await page.locator('#scheduleSettings').isVisible(),true);
   });
   await check('selection arrows follow chronological execution and requested ports',async()=>{
    await page.locator('#scheduleVppEnabled').uncheck();await page.locator('#pp').fill('2');await page.locator('#total').fill('16');await page.locator('#layers').fill('4');await wait();await page.locator('#scheduleGbs').fill('8');await page.locator('#scheduleZoomReset').click();await page.locator('#scheduleBoard').evaluate(e=>e.scrollLeft=0);await page.waitForTimeout(60);

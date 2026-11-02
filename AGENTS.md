@@ -15,7 +15,7 @@
 - 用户已授权：完成页面修改和相关验证后，直接提交并推送到 `origin/main`，无需再次询问是否提交或发布。
 - `.github/workflows/pages.yml` 是现行自动发布入口；仅 main 的 HTML 变更自动触发，也支持手动发布 main。产物根目录 index.html 必须与源 HTML 字节完全一致，并包含 .nojekyll。
 - 线上网址为 `https://superwzb0502.github.io/wzb_tools_5d_parallel/`。发布后跟踪对应工作流并核对公网文件，不能只报告推送成功。
-- PP 调度图沿用当前 PP/DP，MBN 按 GBS ÷（MBS × DP）计算，支持 1F1B、GPipe 与交错 VPP 1F1B。沿用各 stage 的 layerCounts，每层前向 1、反向默认 2（可调）；VPP 的 chunk 共用物理 stage，MBN 需能被 PP 整除，各 stage 层数不少于 chunk 数。保留按层等时说明、全图阶段分界开关（首次 B 开始、末次 F 结束）、整数校验及大图视窗绘制；修改时运行 pipeline-model、pipeline-browser 和 pipeline-weighted-browser、schedule-canvas-browser 测试，避免与权重图的样式、配置导出相互影响。调度图独立全屏，保留 8 行可见高度、表格、拖动/WASD/Ctrl滚轮及选中微批执行箭头，箭头端点按用户的上下方向约定。
+- PP 调度图沿用当前 PP/DP，MBN 按 GBS ÷（MBS × DP）计算，支持 1F1B、GPipe 与交错 VPP 1F1B。沿用各 stage 的 layerCounts，每层前向 1、反向默认 2（可调）；VPP 的 chunk 共用物理 stage，MBN 需能被 PP 整除，各 stage 层数不少于 chunk 数。保留按层等时说明、全图阶段分界开关（末 stage 首个 F 开始、末次 F 结束）、整数校验及大图视窗绘制；修改时运行 pipeline-model、pipeline-browser 和 pipeline-weighted-browser、schedule-canvas-browser 测试，避免与权重图的样式、配置导出相互影响。调度图独立全屏，保留自动 16 行图高及手动调整、表格、拖动/WASD/Ctrl滚轮及选中微批执行箭头，箭头端点按用户的上下方向约定。
 - Pages 首次验收已通过。旧 VPS 工作流在 GitHub 禁用，文件仅保留 workflow_dispatch；不要恢复自动 push 发布或让同一推送同时发布两端。
 - 保留 VPS 站点、容器、备份与原 Actions Secrets/变量，未经后续授权不删除。
 - 私钥、令牌、Secret、known_hosts 等凭据不加入 Git，不打印到聊天或日志。
