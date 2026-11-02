@@ -19,7 +19,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    assert.equal(await task(0,'fwd').getAttribute('data-duration'),'1');assert.equal(await task(1,'bwd').getAttribute('data-duration'),'6');
    await task(1,'bwd').hover();assert.match(await page.locator('#scheduleSelection').innerText(),/3 层/);
   });
-  await check('stage-local phase boundaries can be toggled and exported',async()=>{
+  await check('global phase boundaries can be toggled and exported',async()=>{
    const lines=page.locator('[data-schedule-boundary]');assert.ok(await lines.count()>0);
    assert.ok(await page.locator('[data-schedule-region="warmup"]').count()>0);
    await page.locator('#scheduleBoundaries').uncheck();assert.equal(await lines.count(),0);
