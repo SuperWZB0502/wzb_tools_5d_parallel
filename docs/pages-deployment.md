@@ -24,7 +24,14 @@
 
 - 页面标题、可见名称和描述改为 wzb_tools_5d_parallel；脚本和样式已与迁移前逐字节比较，完全一致。
 - 更新后源文件 SHA-256：d50b36d5fba66a996e06426cb443b32384b59e64780a5ea2e46a6f14572edbee。
-- 最终自动发布及线上验证结果在完成后追加。
+- 最终页面提交：93dd9399cdc64defcbc11c87d7721ce505958486。
+- main 推送自动触发并发布成功：https://github.com/SuperWZB0502/wzb_tools_5d_parallel/actions/runs/41391171422
+- 最终 HTTPS 状态：200；Content-Type: text/html; charset=utf-8。
+- 最终源文件 SHA-256：d50b36d5fba66a996e06426cb443b32384b59e64780a5ea2e46a6f14572edbee。
+- 最终线上文件 SHA-256：d50b36d5fba66a996e06426cb443b32384b59e64780a5ea2e46a6f14572edbee。
+- 最终 Edge 浏览器 7 项验收通过，包括名称、默认绘图、悬浮通信、单击固定、浮窗跟随、侧栏、缩放、WASD 与全屏；无脚本错误，并检查了实际页面截图。
+- 现有模型回归 33 项通过；HTML 的脚本及样式与迁移前逐字节一致。
+- GitHub API 确认旧 VPS 工作流状态 disabled_manually，VPS_SSH_KEY/VPS_KNOWN_HOSTS Secrets 仍存在。
 
 ## VPS 回滚状态
 
