@@ -8,15 +8,9 @@
 - 默认分支：`main`；远端：`origin`。
 - 设计与部署说明：`docs/`；回归测试：`tests/`。
 
-## 唯一维护目录
+## 修改与自动发布
 
-本地正式工作目录仍为 `C:/Users/WZB/XY-Train-5D/xy-train-5d-site`，保留原本地目录名以兼容现有工作环境。父目录的旧页面、文档和测试是迁移前副本，不再编辑或双向同步。
-
-用户已于 2026-11-02 明确授权仓库公开，用于免费的 GitHub Pages；此前“必须保持私仓”的约定已被本次授权替代。不要在仓库中提交私钥、访问令牌、Secret、known_hosts 或其他凭据。
-
-## 后续修改与自动发布约定
-
-用户已授权：以后提出页面修改意见后，由维护 agent 完成修改和相关验证，直接提交并推送至 `origin/main`，无需每次再次询问是否提交或发布。
+本仓库是页面的唯一维护源。不要在仓库中提交个人本地路径、服务器地址、私钥、访问令牌或其他凭据。
 
 1. 先核对本地和远端状态，保留用户及其他 agent 的已有修改；必要时同步远端，不强制推送。
 2. 只编辑本仓库的页面源文件，并执行与本次改动相关的检查。
@@ -31,17 +25,4 @@
 
 `.github/workflows/pages.yml` 使用官方静态发布流程：检出源文件 → 原样复制为 `_site/index.html` 并加入 `.nojekyll` → 校验两份文件完全一致 → 上传 Pages artifact → 发布。产物只包含页面与 `.nojekyll`，不上传整个仓库，不安装 Node、Python 或应用构建依赖。权限限定为 `contents: read`、`pages: write`、`id-token: write`，并使用 concurrency 避免并发发布。
 
-首次手动部署已验收成功：[运行记录](https://github.com/SuperWZB0502/wzb_tools_5d_parallel/actions/runs/41390796809)。HTTPS 返回 200、Content-Type 为 HTML、页面字节与源文件一致，并通过真实 Edge 浏览器的绘图、通信浮窗、缩放、WASD、侧栏及全屏交互检查。迁移与后续版本的具体校验记录见 [Pages 部署记录](docs/pages-deployment.md)。
-
-## VPS 回滚保留
-
-Pages 首次验收通过后，旧 `.github/workflows/deploy.yml` 已在 GitHub 禁用，同时删除了其 push 触发条件，仅保留显式手动回滚入口。因此普通 `main` 推送只发布到 Pages，不会同时发布 VPS。
-
-VPS 的现有站点、容器和备份保留，未执行服务器删除或清理。Actions 中的 `VPS_SSH_KEY`、`VPS_KNOWN_HOSTS` 和原变量也保留，待用户确认 Pages 稳定后再决定是否删除。
-
-- 原站点：`http://176.122.133.178:8081/`，切换后不再自动更新。
-- 原入口：`/var/www/xy-train-5d/index.html`。
-- 备份目录：`/var/backups/xy-train-5d/`。
-- 更新脚本：`infra/server-update.sh`，服务器安装路径 `/usr/local/sbin/xy-train-5d-update`。
-
-确需回滚发布到 VPS 时，由维护者显式启用旧工作流，再手动触发指定版本。仅恢复线上文件时，可由服务器 agent 将选定备份复制到站点目录的 `index.html.new`，再原子替换 `index.html`。
+部署已验收成功：[运行记录](https://github.com/SuperWZB0502/wzb_tools_5d_parallel/actions/runs/41391171422)。HTTPS 返回 200、Content-Type 为 HTML、页面字节与源文件一致，并通过真实 Edge 浏览器的绘图、通信浮窗、缩放、WASD、侧栏及全屏交互检查。
