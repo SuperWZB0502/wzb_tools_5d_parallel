@@ -1,0 +1,15 @@
+# Credentials and local runtime material must never be committed.
+.env
+.env.*
+*.pem
+*.key
+id_*
+
+# Generated verification artifacts and local development dependencies.
+verification/*
+!verification/.gitkeep
+node_modules/
+.venv/
+*.log
+.DS_Store
+Thumbs.db

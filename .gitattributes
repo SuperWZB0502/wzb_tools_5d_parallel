@@ -1,0 +1,9 @@
+* text=auto
+*.md text eol=lf
+*.txt text eol=lf
+*.cjs text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+
+# Preserve the deployable HTML byte for byte, including its published checksum.
+tools/draw_parallel_card.html -text

@@ -1,0 +1,473 @@
+# XY-Train 5D 并行权重切分与通信可视化设计
+
+日期：2026-10-17。版本：第四版，增加 PP 明暗层级、TP 显示方案建议、阶段彩色连线及 stage 选择。状态：待评审，尚未实现 HTML。
+
+## 1. 目标与本次修订
+
+交付一个可直接在浏览器打开的独立 HTML。用户配置卡数、层数、PP 层分布、专家数、TP、CP、PP、EP 和 `moe_tp_extend_ep`，工具自动计算 DP，生成通信组表，以及以权重色块为主体的交互图。
+本版落实以下要求：
+
+1. 根据 PP 生成 PP 行的层分布输入表，由用户填写，不自动均匀分层。
+2. 公式和界面直接使用 TP、CP、PP、EP、DP，不再另设 T、C、P、E、D 等缩写。
+3. 总卡数上限为 4096。
+4. 支持 `moe_tp_extend_ep` 两种模式：关闭时显示专家权重的 TP 分片；开启时显示每卡专家数量减少、单个专家权重完整。
+5. 每张卡只画一个 Attention 模块色块；填写有效专家数后增加一个 MoE 模块色块，内部标注专家索引范围。不判断具体层是 Dense 还是 MoE。
+6. 去掉原来的六类组合组图表，只保留 TP、CP、PP、EP、DP，以及解释复制和梯度同步所需的 DP+CP、专家副本组。
+7. 正式图使用 HTML 内的交互式 SVG 模块色块。模块共用固定色系，PP stage 越大颜色越深；分片位置和模块身份表达切分与复制关系。悬停显示通信对象、通信组、传输内容和目的。
+8. 每个模块色块汇总本 PP stage 层索引范围内的重复结构，不提供选层功能，也不画模块内部的 linear、QKV、输出投影、FC1/FC2 或单个专家。
+9. TP 切分统一画成水平条带：TP rank 0 位于最上方，TP rank 1 位于第二条。本版推荐完整轮廓、非本卡部分灰色、本卡部分彩色的方案，同一 TP 组采用同色，用条带位置区分分片。
+10. “前向、反向、参数更新”作为三个可多选的复选框，按勾选结果过滤通信连线及悬停关系；三种阶段用不同线色，辅以线型和文字。
+11. 增加 PP stage 多选，默认只展开首尾 stage；每个中间 stage 保留各自的编号和 layer 范围，用户选择后才展开卡和模块。
+
+## 2. 代码基点与阅读范围
+
+| 项目 | 记录 |
+| --- | --- |
+| 代码目录 | `feature/feature13_draw_parallel_card/XY-Train` |
+| 本地开发分支 | `draw_parallel_card` |
+| master 基点 | `2c4196c66bbff528ba86feab4f46f67f15115351` |
+| master 说明 | `[TicketNo:] issue191 [Description:] 新寰宇2b encoder适配` |
+| 取码来源 | 本次从 CodeHub 取得的 master 对象，恢复检出后建立独立工作区；origin 已设回 CodeHub |
+| 本轮范围 | 修改设计文档；评审通过后再实现 HTML |
+
+取码命令已补充到 `feature11_per_token_loss/01-取码/README.md`：
+
+```
+```bash
+
+```
+```
+
+源码阅读覆盖通信组初始化、Attention 投影和 TP 通信、CP/Ulysses 通信、专家权重初始化、MoE dispatch/combine、梯度同步和 PP 点对点通信。第 10 节列出对应位置。
+
+## 3. 输入和 PP 层分布表
+
+### 3.1 基本参数
+
+| 参数 | 规则 |
+| --- | --- |
+| 总卡数 | 整数，1～4096；一张卡对应一个 global rank |
+| 总层数 | 正整数，作为 PP 层数之和的校验目标 |
+| 专家数 | 可留空；留空或 0 时只画 Attention；正整数时画 Attention 和 MoE |
+| TP、CP、PP、EP | 正整数，直接使用这些名称 |
+| DP | 只读，`总卡数 / TP / CP / PP`，不提供输入框 |
+| `moe_tp_extend_ep` | 开关，默认关闭；未配置专家数时禁用 |
+
+公式中的“专家数”即原需求中的 M；本文统一写“专家数”。它表示图中每层展示的专家总数，不额外输入共享专家数或 MoE 层间隔。
+
+### 3.2 根据 PP 生成表格
+
+输入 PP 后立即生成 PP 行，每行对应一个 `PP rank`，从 0 编号：
+
+| PP rank | 用户填写：本 stage 层数 | 自动计算：全局层范围 |
+| --- | --- | --- |
+| 0 | 数字输入框 | 根据已填写层数的前缀和计算 |
+| 1 | 数字输入框 | 根据已填写层数的前缀和计算 |
+| … | … | … |
+| PP-1 | 数字输入框 | 根据已填写层数的前缀和计算 |
+
+层数单元格初始为空。页面不会按 `总层数 / PP` 自动填入数据，也不要求总层数能被 PP 整除。所有行填写完、各行至少一层且总和等于总层数后，才生成带权重的完整图。
+PP 改变时，按 PP rank 保留仍存在的行，新增行留空；减少行后重新校验总和。总层数改变时保留用户层分布，不擅自重分配。表格下显示已分配、待分配或超出的层数；未通过校验时不把旧图当成当前结果。
+例如 `总层数=24, PP=2`，用户填写 `[9,15]`：PP rank 0 为 L1～L9，PP rank 1 为 L10～L24。这等价于仓库的 `num_layer_list=[9,15]`。第一层编号为 1，卡和并行 rank 从 0 编号。
+首版按有实际 Transformer 层的 stage 展示；不处理零层 embedding stage 和 VPP。
+
+### 3.3 校验
+
+- 数值及派生乘积为有限的安全整数，限制总卡数不超过 4096；TP、CP、PP、EP 均不能超过总卡数。
+- `总卡数 % (TP × CP × PP) == 0`，据此计算整数 DP。
+- `(CP × DP) % EP == 0`。沿用默认源码路径，允许 EP 大于普通 DP。
+- 配置专家数且关闭扩展时，`专家数 % EP == 0`。
+- 配置专家数且开启扩展时，`专家数 % (EP × TP) == 0`。
+- 未配置专家数时，要求 EP=1，关闭并禁用 `moe_tp_extend_ep`。
+- PP 层分布行数等于 PP，各行是正整数，层数总和等于总层数。
+层数和专家数只用于计算索引范围及切分比例，不逐层或逐专家创建图形。一张卡始终只有一个 Attention 模块色块，以及配置专家数时的一个 MoE 模块色块。
+
+## 4. 通信组计算模型
+
+以仓库默认 `tp-cp-ep-dp-pp` 映射为准。EP 与 CP/DP 共用卡空间：
+
+```
+```text
+总卡数 = TP × CP × DP × PP
+DP = 总卡数 / (TP × CP × PP)
+专家副本数 = CP × DP / EP
+总卡数 = TP × EP × 专家副本数 × PP
+
+```
+```
+
+初始化采用两套 `RankGenerator`：基础生成器 `ep=1, dp=DP, cp=CP`；专家生成器 `ep=EP, dp=DP×CP, cp=1`。专家副本组对应 `_DATA_MODULO_EXPERT_PARALLEL_GROUP`，不能与普通 DP 组混为一谈。
+
+### 4.1 卡的坐标
+
+```
+```text
+global_rank = TP_rank
+            + TP × CP_rank
+            + TP × CP × DP_rank
+            + TP × CP × DP × PP_rank
+合并坐标 = CP_rank + CP × DP_rank
+EP_rank = 合并坐标 % EP
+专家副本rank = floor(合并坐标 / EP)
+
+```
+```
+
+TP 是变化最快的维度。rank 的反解、通信组编号及组内顺序都按照源码前缀积/mask 算法计算，不另用经验公式猜组。
+`moe_tp_extend_ep` 不改变上述基础组初始化结果；它改变专家归属、权重是否沿 TP 分片，以及 dispatch/combine 实际选用的通信域。
+
+### 4.2 展示的组
+
+| 名称 | 每组卡数 | 组数 | 使用场景 |
+| --- | --- | --- | --- |
+| TP | TP | 总卡数 / TP | Attention 分片计算；未扩展专家的分片计算 |
+| CP | CP | 总卡数 / CP | Attention 上下文通信 |
+| PP | PP | 总卡数 / PP | 相邻 stage 激活与反向梯度传输 |
+| EP | EP | 总卡数 / EP | 基础专家组；扩展后的实际路由域另在悬停说明中标注 |
+| DP | DP | 总卡数 / DP | 普通 DP 拓扑和复制关系 |
+| DP+CP | DP × CP | 总卡数 / (DP × CP) | Attention 权重副本的梯度同步 |
+| 专家副本组 | CP × DP / EP | 总卡数 / (CP × DP / EP) | 同一专家权重分片或完整专家的梯度同步 |
+
+原先的六类组合组不再生成独立汇总行、成员表入口或图层：`tp-pp`、`tp-cp`、`tp-dp`、`tp-dp-cp`、`tp-ep`、`tp-ep-pp`。
+有一个与正确解释通信直接有关的细节：开启 `moe_tp_extend_ep` 后，实际路由通常使用源码的 `get_tensor_and_expert_parallel_group()`。悬停说明必须写出“EP 扩展域，实际通信组 TP×EP”和实际成员，而不能误标成基础 EP 组。这里仅作为该次路由的通信说明，不重新引入 TP+EP 的独立图表。AllGather 分发路径同样需要在悬停中标出它实际使用的 TP×EP 域。
+同成员的 HCCL/Gloo 实例按一个逻辑组统计；不同语义的组即使成员相同，仍保留名称。大小为 1 的组标记为单卡组，不画跨卡通信。
+
+## 5. Attention 和 MoE 模块如何画
+
+### 5.1 图的基本单位
+
+画布上的每张卡是带 rank 标签的容器。卡内固定画一个大的 Attention 模块色块；配置专家数时，在下方增加一个大的 MoE 模块色块，并在其中标注本卡持有的专家索引范围和数量。卡框与坐标文字为中性色，模块填充采用固定色系及 PP 明暗层级，通信连线另用阶段颜色。
+图形到 Attention/MoE 两级模块为止，不绘制内部 linear、QKV、输出投影、FC1/FC2、单个专家或额外路由子模块。MoE 的所有本地专家合并在一个模块块中，不因专家数增大增加色块数量。
+每个 PP stage 只标注该 stage 的层索引范围及层数，例如 `PP rank 0 · L1～L9 · 9 层`。卡内两个模块代表这段层范围内的重复结构，不逐层展开、不设置展示层选择器，也不设置专家分页或单专家选择。
+模块色块汇总该 stage 各层的对应模块权重集合。不同 PP stage 使用统一色系，但按 stage 编号从浅到深变化，方便看出阶段归属；同一 TP 组的不同分片可以同色，通过彩色条带位置区分。权重副本仍按模块身份计算，不能仅凭颜色接近就判为复制。
+不读取 Dense/MoE 层分类。用户填写专家数，就为所有卡增加 MoE 模块；没有填写就只画 Attention。
+
+### 5.2 Attention 的 TP 切分与 CP/DP 复制
+
+两种候选显示方式：
+
+| 方案 | 画法 | 优点 | 代价 |
+| --- | --- | --- | --- |
+| 仅显示本卡分片、分片异色 | 只画本地持有部分，不同 TP rank 用不同颜色 | 紧凑，容易区分不同 TP rank | 缺少完整模块参照，切分比例和位置不如灰底直观，也占用更多颜色语义 |
+| 完整轮廓、灰底加本地彩色条带 | 每卡保留完整模块轮廓，非本卡部分为灰色；同一 TP 组的本地条带同色 | 一眼看到本卡持有比例和位置；颜色可集中表达模块族和 PP 明暗 | 灰色背景占一定面积；需要通过位置和标签区分 TP rank |
+
+本版推荐第二种作为默认设计，不额外增加双模式切换控件，待评审决定。它更符合本工具同时检查切分比例、复制关系和 PP 阶段的用途。
+Attention 只使用一个矩形模块块。完整轮廓按水平切线分为 TP 条，自上向下编号，TP rank 0 对应第一条，TP rank 1 对应第二条，以此类推。只把本卡条带填为模块颜色，其余区域填为中性灰色，灰色区域表示本卡未持有，不能理解成已加载的完整权重。
+同一个 PP stage 内，同一 Attention TP 组的彩色条带采用完全相同的颜色，不同 TP rank 用所在条带和 `TP rank` 标签区分。同一分片在 CP/DP 卡上的副本同时具有相同颜色和相同条带位置。TP=1 时全块彩色，没有非本地灰区。
+例如 TP=2：TP rank 0 为上半彩色、下半灰色，TP rank 1 为上半灰色、下半彩色；两张卡的彩色部分同色。CP 切分序列，不再切 Attention 权重。
+TP 很大时，仅绘制当前条带及必要的邻近边界，标注 `TP 分片 (TP_rank+1)/TP`。过窄条带使用最小可见标记，并保留真实比例文字；整个模块轮廓作为本卡本地分片的悬停区域，不生成 TP 个背景图元。
+
+### 5.3 关闭 `moe_tp_extend_ep`
+
+```
+```text
+每卡专家数 = 专家数 / EP
+专家编号起点 = EP_rank × 每卡专家数
+每个专家的本地权重比例 = 1 / TP
+
+```
+```
+
+同一个 EP rank 的不同 TP 卡保存相同专家索引范围的不同 TP 权重分片。用一个 MoE 模块块汇总这段范围，标注 `Experts [起点～终点] · 数量`，不逐专家或逐矩阵绘制。
+MoE 块与 Attention 使用相同的水平切分及灰底规则：TP rank 0 为最上方的彩色条带，TP rank 1 为第二条，其余为灰色。TP=2 时是上半块/下半块，TP=4 时是四条中的一条。同一 TP 组、相同专家范围的条带同色，靠位置区分分片；同一分片的复制卡颜色与条带位置均一致。
+例如 `专家数=8, EP=4, TP=2`：
+
+| EP rank / TP rank | MoE 块内标注 | 本卡 MoE 填充 |
+| --- | --- | --- |
+| 0 / 0 | `Experts [0～1] · 2 个` | 整个 MoE 轮廓的上半部分 |
+| 0 / 1 | `Experts [0～1] · 2 个` | 整个 MoE 轮廓的下半部分 |
+| 1 / 0 | `Experts [2～3] · 2 个` | 整个 MoE 轮廓的上半部分 |
+| 1 / 1 | `Experts [2～3] · 2 个` | 整个 MoE 轮廓的下半部分 |
+
+专家副本 rank 不进入权重身份；同一 PP 层范围、相同专家范围和相同 TP 分片的 MoE 块副本使用相同颜色及条带位置。相同专家范围的另一 TP 分片也同色，但条带位置不同，不属于权重副本。
+
+### 5.4 开启 `moe_tp_extend_ep`
+
+```
+```text
+每卡专家数 = 专家数 / (EP × TP)
+专家位置 = EP_rank × TP + TP_rank
+专家编号起点 = 专家位置 × 每卡专家数
+每个专家的本地权重比例 = 1
+
+```
+```
+
+TP 卡参与分配不同专家，单个专家不再做 TP 权重切分。每卡仍只画一个 MoE 模块块，整块填满，并标注缩小后的专家索引范围和数量。不同专家范围使用固定色系中的不同颜色；Attention 仍保留 TP 彩色条带和非本地灰区。
+同一 TP 组同色的规则适用于“同一模块被 TP 切分”的显示。扩展 MoE 持有不同专家集合，没有模块内部的 TP 分片，因此以专家索引范围区分颜色；相同专家范围跨 PP stage 时，仍沿用同一色系并逐 stage 加深。
+同样使用 `专家数=8, EP=4, TP=2`：
+
+| EP rank / TP rank | MoE 块内标注 | 本卡 MoE 填充 |
+| --- | --- | --- |
+| 0 / 0 | `Experts [0～0] · 1 个` | 整个 MoE 块 |
+| 0 / 1 | `Experts [1～1] · 1 个` | 整个 MoE 块 |
+| 1 / 0 | `Experts [2～2] · 1 个` | 整个 MoE 块 |
+| 1 / 1 | `Experts [3～3] · 1 个` | 整个 MoE 块 |
+
+实现依据不仅是专家数量公式：`GroupedMLP.__init__` 在扩展模式初始化专家权重时临时将 TP world size 设为 1，避免权重切分，完成后恢复 Attention 使用的 TP 大小。`moe_extended_tp` 是另一个源码配置，不与 `moe_tp_extend_ep` 混用；本设计不覆盖前者。
+
+### 5.5 颜色与权重身份
+
+权重身份与显示颜色分别计算。权重身份仍使用以下键，用于准确查找复制关系：
+
+| 权重 | 身份键 |
+| --- | --- |
+| Attention | `(PP层索引范围, Attention, TP分片编号)` |
+| 未扩展 MoE | `(PP层索引范围, MoE, 专家索引范围, TP分片编号)` |
+| 扩展 MoE | `(PP层索引范围, MoE, 专家索引范围, 完整权重)` |
+
+global rank、CP rank、DP rank 和专家副本 rank 不属于身份键。相同身份的副本具有相同填充色和条带位置；不同 TP 分片虽然身份不同，但在推荐灰底方案中采用同色、不同位置。
+颜色编码：
+
+| 维度 | 颜色规则 |
+| --- | --- |
+| 模块/专家范围 | 固定的统一色系：Attention 使用固定主色，MoE 按专家索引范围使用固定配色；所有 PP stage 共用相同色相规则 |
+| PP stage | 对上述配色使用统一明度档位：PP rank 0 最浅，随 PP rank 增大逐渐加深，尾 stage 最深；同一 stage 的模块使用相近明度 |
+| TP 分片 | 推荐方案不改变色相和深浅，只改变本地彩色条带的纵向位置，其余部分灰色 |
+| CP/DP/专家副本 | 对相同模块身份保持颜色、条带位置一致 |
+
+明度按实际 PP rank 和完整 PP 数量计算，不按当前展开的 stage 重新归一化；选择、折叠 stage 不会变色。PP=1 使用中间明度。最浅颜色仍需与灰色缺片背景可区分，最深颜色保留标签对比度；PP 很多时保留编号和层范围辅助识别。
+PP 层范围标在 stage/卡标题，模块块标出模块名、分片及 MoE 专家范围。颜色不随 hover、通信勾选或 stage 展开状态改变。相近明暗表达相近 PP 阶段，不表示不同 stage 的参数共享。
+悬停时以描边、箭头、透明度和文字区分当前块、通信对象和同权重副本，通信线另按阶段着色。副本查询以权重身份为准，不能把同一 TP 组中同色但位置不同的条带当成副本，也不能把 PP 明暗接近当成副本。
+
+## 6. 悬停通信：对象、组和目的
+
+### 6.1 交互结果
+
+画布工具栏提供三个独立复选框：`前向`、`反向`、`参数更新`。默认只勾选前向，可同时勾选任意多个，也允许全部取消。三个选项直接控制通信连线、高亮对象和悬停详情中的通信关系列表，不只是切换标题。
+
+| 勾选项 | 连线颜色 / 辅助线型 | 显示的通信 |
+| --- | --- | --- |
+| 前向 | 蓝色 `#2563EB` / 实线箭头 | TP 模块协作计算、CP 上下文交换、MoE token 分发/结果合并、相邻 PP stage 的激活传输 |
+| 反向 | 红色 `#DC2626` / 虚线箭头 | 模块输入/输出梯度传播、CP/EP 对应反向通信、PP 反向梯度传输，以及 DP+CP/专家副本组的参数梯度同步 |
+| 参数更新 | 绿色 `#16803D` / 点划线 | 分布式优化器在对应副本组中的参数 AllGather；普通优化器的本地更新不添加跨卡连线 |
+
+只勾选参数更新不会显示反向阶段的梯度 AllReduce/ReduceScatter。全部取消时隐藏所有通信关系，仍可查看模块身份和复制关系。多阶段同时选中时以不同线色为主要区别，线型和文字辅助；复选框旁、箭头、连线标签及悬停列表中的阶段标记使用同一颜色规则，模块填充不变。
+多个阶段经过同一对模块时，连线略微错开并保留各自方向，不让后绘制的颜色覆盖其他阶段；标签错开排布，避免相互遮挡。
+鼠标进入 Attention 或 MoE 色块，立即显示：
+
+- 当前模块：卡 rank、PP 层索引范围、Attention/MoE、TP 分片比例；MoE 附专家索引范围和数量。
+- 同权重副本：按模块权重身份高亮复制卡，保持其填充色；不把同色的其他 TP 分片列为副本。
+- 当前勾选阶段的通信关系：通信组名称和编号、全组成员、除本卡外的对象 rank，以及对端 Attention/MoE 模块色块。
+- 每条关系用模块级文字标出传输内容和目的，例如“合并 Attention 分片计算结果”“交换 Attention 上下文”“MoE token 分发/结果合并”“聚合模块权重副本的梯度”。悬停不拆成内部 linear 调用列表。
+- 视窗外对象仍计入列表，提供可定位的 rank/模块入口；没有显示在当前分页上，不等于没有通信。
+点击模块色块可固定悬停结果，便于把鼠标移到列表中查看；键盘聚焦及触屏点击获得同样详情。取消某一通信阶段后，即使详情已固定，也同步移除该阶段的连线和关系。
+权重块是通信说明的锚点。TP、CP、PP、EP 大多传激活或激活梯度，DP 同步的是参数梯度；连线不能统一写成“发送权重”。参数更新后的 AllGather 才按对应路径标注为参数数据通信。
+
+### 6.2 源码对应的通信语义
+
+| 触发色块 / 关系 | 对象和实际组 | 目的及图中说明 |
+| --- | --- | --- |
+| Attention / TP | 同一 PP 层范围的其他 TP 分片 Attention 块，TP 组 | 前向汇集必要输入并合并分片结果；反向合并输入梯度。按 SP 模式解释 AllGather、AllReduce 或 ReduceScatter，但合并为模块级关系展示 |
+| Attention / CP | 同一 PP 层范围、同 TP 分片的 Attention 副本块，CP 组 | 前向交换上下文激活并恢复输出布局，反向传播相应梯度；本设计采用仓库默认 Ulysses 的 AllToAll 路径 |
+| Attention / 副本梯度 | 同一 Attention 权重集合身份的副本块，DP+CP 组 | 在反向阶段同步模块权重梯度；普通 DDP 为 AllReduce，分布式优化器为 ReduceScatter |
+| 未扩展 MoE / TP | 同一 PP 层范围、同专家索引范围的其他 TP 分片 MoE 块，TP 组 | 整理 MoE 输入、归约 MoE 分片输出，并传播反向梯度；图中不拆解具体内部线性层 |
+| MoE / EP dispatch、combine | 对应 dispatcher 的对端 MoE 块；基础 EP 或扩展域，见下节 | 前向分发 token 并合并 MoE 结果，反向传递相应梯度；不交换专家权重 |
+| MoE / 副本梯度 | 同一 PP 层范围、同专家范围、同分片的 MoE 副本块，专家副本组 | 在反向阶段汇总模块权重梯度；扩展后同步完整专家集合的副本，不把不同专家范围当成副本 |
+| stage 边界 / PP | PP 组相邻 stage 的 Attention/MoE 块边缘 | 前向传输 stage 输出激活，反向传输 stage 输入梯度；不对整个 PP 组画全连接 |
+| Attention或MoE / 参数更新 | 对应副本组，且使用分布式优化器 | 更新分片后 AllGather 参数，保持模块权重副本一致；仅在勾选参数更新时显示 |
+
+每条关系内部带通信阶段。一个模块跨本 stage 多层重复发生的同类通信只展示一条模块级关系，并附该 PP 层索引范围，不逐层复制连线。源码中的多次内部调用可以合并说明，但不能因此新增组成员或推导不存在的通信。
+Attention 的梯度同步不能只标成普通 DP。源码默认 DDP 初始化把普通参数放入 `get_data_parallel_group(with_context_parallel=True)`，专家参数放入 `get_data_modulo_expert_parallel_group(with_context_parallel=True)`。EP=1 时专家副本组与 DP+CP 成员重合，也不需要虚构额外专家通信。
+
+### 6.3 MoE 路由模式与真实通信域
+
+仅有并行大小不能唯一确定 MoE 的通信操作。为了让悬停对象明确，增加一个可选的“MoE 分发方式”选择器，`AllToAll / AllGather`，默认使用仓库默认的 AllGather；它只影响通信说明，不改变专家权重布局及基础组。
+
+| 模式 | dispatch | combine | 需要标出的实际域 |
+| --- | --- | --- | --- |
+| 未扩展 + AllToAll | 按路由发送 token；另有 TP 输入整理 | 返回专家输出；另有 TP 输出归约 | EP，以及独立 TP 关系 |
+| 未扩展 + AllGather | 收集 token、专家索引和必要的路由概率，各卡筛选本地专家输入 | 将专家输出归约并分回原 token 布局 | TP×EP，悬停说明其实际成员 |
+| 扩展 + AllToAll | token 发往持有完整目标专家的卡 | 专家输出送回源 token 位置 | EP 扩展域，即 TP×EP；没有专家权重 TP 分片归约 |
+
+开启扩展后，本版将分发方式固定为 AllToAll，并明确使用已核对的 `moe_permutation_async_comm=true, moe_grouped_gemm=true, moe_alltoall_overlap_comm=true, moe_hierarchical_alltoallv=false` 参考路径。源码的 `token_permutation_new` / `token_unpermutation_new` 在此路径显式选择 TP×EP 通信组。
+这个限定来自源码分支差异：非 overlap 的 `token_permutation_tp_extend_ep` 调用 `A2AInnerNodeComm`，继续追踪到当前 `get_a2a_inner_node_comm_group`，在未启用分层通信时返回 TP 组；不能把该路径也直接宣称为 TP×EP。该分支的运行正确性未在本轮验证，工具不将它作为扩展模式的通信依据，也不改动训练代码。
+路由命中哪些专家、各对端实际发送几个 token 取决于运行时 top-k、路由索引和 split 数。没有这些数据时，图展示“通信域”和“候选路由对象”，不伪造某个 token 必定到达某个专家，也不绘制逐 token 的确定流量。路由连线直接锚定各卡 MoE 块的边缘并标注 dispatch/combine，不另画路由子模块或专家内部结构；对端 MoE 块内的专家索引范围用于说明它持有哪些专家。
+
+### 6.4 其他通信条件
+
+提供折叠的通信说明选项：`SP` 开关、`分布式优化器` 开关，默认均关闭。它们不增加拓扑维度，只用于把 TP 的 AllReduce/ReduceScatter 和副本同步的 AllReduce/ReduceScatter/参数 AllGather 说明选准；选项代表当前示意配置，不表示已经校验整个训练命令。
+CP 固定以 Ulysses 为参考。Ring/混合 CP 还需要算法参数与时序信息，本版不声称展示这些算法的直接邻居关系。普通参数的 SP LayerNorm、小型辅助参数、共享专家、ZeRO-3、2D TP、Ray 映射等不画入本次模块示意。
+
+### 6.5 PP 层边界
+
+每个 PP stage 以层索引范围表示重复结构，因此只画模块级的 stage 边界通信，不设置选层或跳转到具体层的交互：
+
+- 配置专家数：前向从当前卡 MoE 模块的 stage 输出边缘连接到下一 stage 卡的 Attention 模块输入边缘；未配置专家数时，连接两侧 Attention 模块。
+- 反向沿上述 stage 边界反向传输梯度，只有勾选反向时才显示。
+- 连线标签注明组和真实边界，例如 `PP G0 · L9 → L10 · 激活传输`，不把图中聚合模块解释成所有层向下一 stage 的所有层直接通信。
+模块边缘的输入/输出锚点只用于连线定位，不是单独的图形子模块。PP=1、首 stage、尾 stage 分别处理不存在的邻居，不把流水线首尾连成环。箭头表达完整 stage 的输出与梯度，图中省略的残差等细节不影响这一层级。
+相邻 stage 被收起时，PP 线指向那个真实相邻 stage 的摘要位置，并列出其实际 rank 和边界层范围。不得绕过中间 stage，直接把首 stage 和尾 stage 画成一次点对点通信。悬停不会自动展开隐藏 stage；用户从 stage 选择器或对端定位入口明确选择后再展开。
+
+## 7. 图形布局、折叠与性能
+
+### 7.1 实际图形布局
+
+横向按真实 PP rank 排列 stage，stage 标题注明层索引范围；默认仅展开首尾 stage，中间每个 stage 保留各自的摘要。展开的 stage 内，纵向排列 CP/DP 相关卡组；每张卡从上到下放置 Attention 模块块和可选的 MoE 模块块，不画内部 linear、逐层结构或单个专家。
+两个模块使用统一的水平条带表达 TP 分片，TP rank 从上向下排序。推荐方案中本地条带有色、其他区域灰色，同一 TP 切分组内同色。扩展模式下 MoE 不再切条，整块填满，通过专家索引范围展示专家数量切分。各模块色系随 PP rank 增大从浅到深；范围标签可换行。
+图的主体是有复制关系的彩色权重块；rank 与坐标作为卡标题和详情辅助定位。所有权重图形由 SVG rect/path 等元素绘制，可缩放、平移和命中悬停。文档中的表格仅用于核对计算，正式图不使用文本字符拼接。
+基本尺寸建议：模块外轮廓至少 96×48px，保持可命中面积；缩放过小时保留模块轮廓和必要标签，聚焦卡后恢复可读尺寸。模块尺寸不随层数或专家数增加，标签换行不会改变相邻卡的网格轨道。
+
+### 7.2 PP stage 选择与省略
+
+画布工具栏提供 PP stage 多选入口，每项为 `PP rank + layer 范围`。初始展开集合为 `{0, PP-1}`，PP=1 时去重为 `{0}`，PP=2 时两者都展开。
+
+- 每个未展开的中间 stage 使用窄摘要列，保留各自 PP rank、layer 起止和层数，并标记省略。不会把所有中间 stage 合并成一个没有范围的省略号。
+- 勾选 stage 后，在原来的 PP 顺序位置展开该 stage 的卡和模块；取消勾选后恢复摘要。可重新收起首尾 stage，也允许全部收起，此时保留所有 stage 摘要与通信组表。
+- 摘要本身可作为用户展开入口。鼠标悬停或切换通信阶段不会自动展开。对端定位若涉及隐藏 stage，提供显式的展开定位操作。
+- 展开集合与 PP 层分布输入分开管理，收起不会删除该 stage 的层数、卡或通信组。层数修改只更新范围；PP 数量修改时保留有效 stage 选择，并把新的首尾 stage 加入展开集合。
+- 保留全部 stage 的真实编号和范围；编号过多时摘要区域可滚动并虚拟渲染，不要求所有 stage 同时挤进一屏。
+例如 `PP=4, 层分布=[3,5,4,6]`：默认展开 stage 0（L1～L3）和 stage 3（L13～L18），stage 1（L4～L8）与 stage 2（L9～L12）各自显示摘要。选择 stage 1 后，只展开它；stage 2 继续省略。各 stage 的颜色深浅始终按 0～3 的原始编号计算。
+这是 stage 显示选择，不是单层选择：任意展开 stage 仍只通过层索引范围汇总重复模块，不引入选层功能。
+
+### 7.3 保持权重复制关系的折叠
+
+EP 可能跨越普通 DP；只有保留完整 CP/EP 重复结构，折叠后才仍然能区分专家身份。
+
+```
+```text
+重复块跨度 = lcm(CP, EP)
+每块包含的普通 DP 坐标数 = 重复块跨度 / CP
+重复块数量 = CP × DP / 重复块跨度
+基础图卡数 = TP × PP × 重复块跨度
+
+```
+```
+
+当 EP 整除 CP 时，可以保留一个普通 DP 坐标并标注 `× DP`；其他情况标注“× 重复块数量”，同时写清每块包含几个普通 DP 坐标和完整 DP 值。
+扩展模式改变专家归属，但 TP 始终保留在重复块内，上述折叠仍成立。切换重复块保留真实 global rank 和原始 PP stride，不按折叠后的卡数重新编号。
+同权重副本或通信对象被折叠时，悬停列表仍给出完整对象及其重数，图上显示跨块标记，可展开定位。不能只保留当前可见对象来重算组数。
+
+### 7.4 4096 卡以内的显示预算
+
+- 所有规模默认只展开首尾 PP stage；展开 stage 内卡数较多时，再折叠可复制块。
+- 单次视窗最多 128 张卡、256 个模块色块，每个模块只创建常数数量的 SVG 元素。层数和专家数仅影响范围标签，不增加图元。
+- 展开更多 stage 后如超预算，按 PP/复制块/TP/CP 卡范围切片或虚拟渲染；不会擅自取消用户选择的 stage。没有按层、按专家或按内部矩阵展开和分页的功能。
+- 通信对象不在当前视窗时通过数量、rank 列表和定位入口保留，不用一条越界且无法查看的连线代替。
+- 通信组表始终按完整总卡数计算，不受 stage 选择、图形分页、折叠或通信阶段勾选影响。
+
+## 8. 通信组表与页面结构
+
+参数区包含基本输入、只读 DP、PP 层分布表及 `moe_tp_extend_ep` 开关；通信说明选项折叠显示。合法输入防抖约 200ms 后自动刷新，输入未完成时展示对应校验状态。
+结果包含“权重切分图 / 通信组表”两个视图，共用选中 rank、模块和模块权重集合身份。画布工具栏常驻 PP stage 多选入口，以及“前向、反向、参数更新”三个带颜色标识的复选框，图形侧边显示固定的悬停详情。通信组表提供七类组的数量、每组卡数、成员和用途，按组分页，长成员列表可定位 rank。
+默认保留单卡组并标出无跨卡通信。专家数未配置时，EP 行标注未启用，不生成 MoE 模块、MoE 悬停事件或专家副本独立展示。删除六类组合组的展示入口和原“组合组”开关。
+为窄屏提供纵向参数表和详情布局，画布在自己的区域滚动。模块颜色由模块族/专家范围与实际 PP rank 决定，TP 分片由灰底中的位置区分；通信线颜色由阶段决定。hover/选中只增加描边，不改变模块填充。隐藏 stage 保留可读范围和展开入口，所有通信信息仍对应真实拓扑。
+
+## 9. 实现边界与数据结构
+
+预期产物为 `tools/draw_parallel_card.html`，内嵌 CSS、JavaScript 和 SVG 图形，可离线直接打开，不依赖 Python、NPU、CDN 或本地服务。
+采用原生 HTML/CSS/JavaScript + SVG。确定性的卡布局与模块条带不需要自动布局库；通信通过显式规则生成，SVG 提供模块色块命中和连线。此阶段只写设计，不创建功能 HTML。
+内部数据职责：
+
+| 数据 / 函数 | 职责 |
+| --- | --- |
+| `Config` | 总卡数、总层数、专家数、TP/CP/PP/EP、用户层分布及模式开关 |
+| `PhaseFilter` | 前向、反向、参数更新的勾选集合；同时过滤连线与悬停通信列表 |
+| `StageSelection` | 当前展开的 PP stage 集合，初始为去重后的首尾 stage；未选 stage 保留摘要 |
+| `validateConfig` | 数值、整除关系、PP 行数和总和校验 |
+| `buildTopology` | 两套 rank 坐标与基础组；按需生成组成员 |
+| `buildLayerRanges` | 根据用户层分布前缀和生成实际全局层范围 |
+| `resolveExpertPlacement` | 两种扩展模式的专家编号和 TP 分片归属 |
+| `WeightIdentity` | PP 层索引范围、模块、MoE 专家索引范围及分片身份；用于准确查询副本，不通过同色推导身份 |
+| `ColorEncoding` | 模块/专家范围固定色系、实际 PP rank 明度、非本地灰底；通信阶段另有固定线色 |
+| `ModuleBlock` | 所在 rank、Attention/MoE、模块权重集合身份、轮廓及本地水平条带 |
+| `CommunicationRelation` | 阶段、实际组、成员、传输内容、目的、源/目标模块及适用条件；PP 附边界层索引 |
+| `buildRelations` | 由权重身份和当前模式生成通信关系，不从颜色或屏幕相邻位置猜通信 |
+| `VisibleSlice` | 展开 stage 的当前卡范围及复制块映射、隐藏 stage 摘要；不改变完整拓扑，不含选层或专家窗口 |
+| `renderDiagram / renderHover` | 绘制灰底模块、PP 明暗和本地条带；按勾选阶段绘制彩色连线，并解析对端到模块或隐藏 stage 摘要 |
+
+所有完整卡关系最多涉及 4096 ranks，可以缓存已查询组及模块副本；图元数量只与卡数及是否配置 MoE 有关，不逐层或逐专家建立笛卡尔积。通信边按当前卡窗口和勾选阶段生成。
+
+## 10. 源码依据
+
+所有链接均对应第 2 节基点。以下内部源码用于确定模块级的切分和通信语义，不作为图形细化到内部 linear 的要求；画面和悬停列表始终保持 Attention/MoE 模块粒度：
+
+| 源码位置 | 本设计依据 |
+| --- | --- |
+| [`initialize.py:360`](../../../megatron/training/initialize.py#L360) | 默认初始化 order 为 `tp-cp-ep-dp-pp` |
+| [`parallel_state.py:340`](../../../megatron/core/parallel_state.py#L340) | mask 与前缀积生成 rank 组，保持组和成员顺序 |
+| [`parallel_state.py:695`](../../../megatron/core/parallel_state.py#L695) | 默认校验 CP×DP 可被 EP 整除；建立基础/专家两套生成器 |
+| [`parallel_state.py:779`](../../../megatron/core/parallel_state.py#L779) | 创建各基础组、DP+CP 和专家副本组 |
+| [`arguments.py:2104`](../../../megatron/training/arguments.py#L2104) | 用户 PP 层分布总和及行数校验、全局层偏移 |
+| [`gpt_layer_specs.py:95`](../../../megatron/core/models/gpt/gpt_layer_specs.py#L95) | Attention QKV 使用 ColumnParallelLinear，输出投影使用 RowParallelLinear |
+| [`attention.py:429`](../../../megatron/core/transformer/attention.py#L429) | QKV 投影不收集完整输出；TP 分片用于本卡 Attention 计算 |
+| [`layers.py:780`](../../../megatron/core/tensor_parallel/layers.py#L780) | 列并行权重输出维切分；行并行输入维切分见同文件 1056 行 |
+| [`layers.py:436`](../../../megatron/core/tensor_parallel/layers.py#L436) | TP/SP 的前向输入 AllGather、反向输入梯度 AllReduce/ReduceScatter |
+| [`layers.py:1175`](../../../megatron/core/tensor_parallel/layers.py#L1175) | 输出投影按 SP 选择 ReduceScatter 或普通 TP AllReduce |
+| [`ulysses_context_parallel.py:130`](../../../megatron/core/context_parallel/ulysses_context_parallel.py#L130) | 读取 CP 组；前向 QKV 交换与输出恢复见同文件 190～242 行 |
+| [`moe_layer.py:50`](../../../megatron/core/transformer/moe/moe_layer.py#L50) | 默认每卡专家数、专家编号；扩展分配规则见 `init_expert_relocation` |
+| [`experts.py:48`](../../../megatron/core/transformer/moe/experts.py#L48) | 扩展模式临时 TP=1 初始化完整专家；默认 FC1/FC2 按 TP 分片 |
+| [`token_dispatcher.py:711`](../../../megatron/core/transformer/moe/token_dispatcher.py#L711) | 普通 AllToAll 路径：TP 输入整理、EP token 分发、TP AllGather |
+| [`token_dispatcher.py:1253`](../../../megatron/core/transformer/moe/token_dispatcher.py#L1253) | 普通 AllToAll combine：TP ReduceScatter、EP 返回、恢复序列布局 |
+| [`token_dispatcher.py:943`](../../../megatron/core/transformer/moe/token_dispatcher.py#L943) | overlap 路径按 `moe_tp_extend_ep` 选择 EP 或实际 TP×EP 组 |
+| [`token_dispatcher.py:1353`](../../../megatron/core/transformer/moe/token_dispatcher.py#L1353) | overlap combine 使用同一实际域返回 token 输出 |
+| [`token_dispatcher.py:1193`](../../../megatron/core/transformer/moe/token_dispatcher.py#L1193) | 非 overlap 扩展分支使用 A2AInnerNodeComm；不能与上一分支混用结论 |
+| [`comm_utils.py:289`](../../../megatron/core/transformer/moe/comm_utils.py#L289) | A2AInnerNodeComm 继续调用 parallel_state 的 getter |
+| [`parallel_state.py:2008`](../../../megatron/core/parallel_state.py#L2008) | 未启用分层时 inner getter 返回 TP 组，属于需明确排除的分支差异 |
+| [`token_dispatcher.py:105`](../../../megatron/core/transformer/moe/token_dispatcher.py#L105) | AllGather 分发收集 token/索引；combine 的 ReduceScatter 见同文件 199 行 |
+| [`mappings.py:148`](../../../megatron/core/tensor_parallel/mappings.py#L148) | 上述 MoE AllGather/ReduceScatter 实际使用 TP×EP 组 |
+| [`distributed_data_parallel.py:562`](../../../megatron/core/distributed/distributed_data_parallel.py#L562) | 普通参数使用 DP+CP，专家参数使用专家副本组分配梯度 buffer |
+| [`param_and_grad_buffer.py:107`](../../../megatron/core/distributed/param_and_grad_buffer.py#L107) | 按分布式优化器开关选择梯度 ReduceScatter 或 AllReduce |
+| [`distrib_optimizer.py:1858`](../../../megatron/core/optimizer/distrib_optimizer.py#L1858) | 更新后在对应副本组 AllGather 参数 |
+| [`p2p_communication.py:406`](../../../megatron/core/pipeline_parallel/p2p_communication.py#L406) | PP 首尾边界判断；前向向下一 stage，反向向上一 stage 传输 |
+
+默认训练适配路径没有把基础分组替换成旧的、已被注释的 `initialize_model_parallel_wrapper`；Ray 的 RankGenerator 补丁不在本次范围。通信语义以这里列出的标准 Attention、GroupedMLP 及明确的 dispatcher 路径为参考，不覆盖模型自定义投影、冻结权重或全参数分片训练。
+
+## 11. 样例与后续验收
+
+### 11.1 非均匀 PP 与两种专家布局
+
+使用：`总卡数=32, 总层数=24, PP层分布=[9,15], 专家数=8, TP=2, CP=2, PP=2, EP=4`，得到 `DP=4, 专家副本数=2`。
+
+| 检查项 | 预期 |
+| --- | --- |
+| r0、r1 | 属于 PP rank 0，持有 L1～L9 |
+| r16、r17 | 属于 PP rank 1，持有 L10～L24 |
+| r0 与 r2 的 Attention | 都汇总 L1～L9 的第一个 TP 分片，填充上半条带且同色；有 CP 前向通信和 DP+CP 梯度同步 |
+| r0 与 r1 的 Attention | 完整灰底轮廓，分别在上半/下半填充同色条带；两片身份不同，通过 TP 组共同完成分片计算，不列为彼此的副本 |
+| 未扩展的 r0 / r1 MoE | 块内都标注 `Experts [0～1]`；分别填充 MoE 上半部分和下半部分 |
+| 扩展后的 r0 / r1 MoE | 两块都填满；分别标注 `Experts [0～0]` 和 `Experts [1～1]`，使用不同颜色 |
+| r0 与 r8 的 MoE | 两种模式下均为同层范围、同专家范围的对应权重副本，同色；专家副本组 `[0,8]` |
+| r0 与 r4 的 MoE | 专家索引范围不同，不能因 DP 方向就涂成复制色 |
+| PP stage 的层范围和颜色 | stage/卡标题标出 L1～L9 或 L10～L24；两个 stage 都展开，后一 stage 沿用色系但明度更深，不出现单层选择器 |
+| 用户填写 `[8,15]` | 总和 23，与总层数 24 不符，不生成当前完整图 |
+
+### 11.2 悬停的具体结果
+
+悬停 r0 的 Attention 模块块，其 PP 层索引范围为 L1～L9：
+
+| 关系 | 必须列出的对象 / 内容 |
+| --- | --- |
+| 模块身份及副本 | L1～L9 的 Attention 第一个 TP 分片；副本卡为 `[0,2,4,6,8,10,12,14]`，其中本卡为 r0 |
+| 勾选前向 / TP | G0 `[0,1]`；高亮 r1 的 Attention 模块分片，说明分片协作计算及结果合并 |
+| 勾选前向 / CP | G0 `[0,2]`；高亮 r2 的 Attention 模块，说明交换上下文激活 |
+| 勾选反向 / DP+CP | G0 `[0,2,4,6,8,10,12,14]`；高亮对应 Attention 副本，说明梯度同步 |
+| 勾选反向 / TP、CP | 对应 TP/CP 组，说明模块梯度传播；不展开内部 linear 调用 |
+| 勾选参数更新 | 分布式优化器开启时显示 DP+CP 域的参数 AllGather；关闭时不虚构更新通信 |
+
+悬停 r0 的 MoE 模块块，范围同样为 L1～L9：
+
+| 模式 | 必须列出的关系 |
+| --- | --- |
+| 未扩展 + AllToAll | 本块标注 `Experts [0～1]`；前向高亮 r1 的另一 MoE 半片和 EP G0 `[0,2,4,6]` 的对端 MoE 块；反向包含专家副本 G0 `[0,8]` 的梯度同步 |
+| 未扩展 + AllGather | 前向/反向使用实际 TP×EP 域 `[0,1,2,3,4,5,6,7]`，以各卡 MoE 整块作为通信对象；不能只标成 EP G0 |
+| 扩展 + AllToAll overlap | 本块标注 `Experts [0～0]` 并完整填充；前向不再与 r1 合并专家半片，显示实际路由域 `[0,1,2,3,4,5,6,7]`；反向同步专家副本 `[0,8]` |
+| PP 前向边界 | 配置 MoE 时，r0 MoE → r16 Attention；标签为 `PP G0 · L9 → L10 · 激活传输` |
+| PP 反向边界 | r16 Attention → r0 MoE；标签说明 L10/L9 边界的梯度返回 |
+
+上述关系只在对应阶段被勾选时显示，模块身份及复制信息始终可查。全部勾选会同时显示所有适用阶段，全部取消则不显示通信连线或通信列表。EP 仍表示候选路由域，不能解释成每个 token 都向整个域发送。
+
+### 11.3 其余验收
+
+1. PP 表始终由 PP 生成，初始空白；支持不均匀层分布；改变总层数不覆盖用户填写。
+2. 界面、公式和表头直接使用 TP/CP/PP/EP/DP；4096 卡允许输入，4097 卡明确拒绝。
+3. 每卡固定一个 Attention 块，配置专家数时增加一个 MoE 块；层数或专家数增加不会增加模块数量。没有选层、逐层图、单专家图、内部 linear 图或专家分页。
+4. 推荐灰底方案中，每卡保留完整模块轮廓，TP=2 时上半/下半着色，TP=4 时按 rank 从上到下排列四条；同一 TP 切分组条带同色，非本地区域灰色。准确副本查询不得混入同色的其他 TP 分片。扩展 MoE 整块填满、专家范围缩小，不同范围配色区分。
+5. 七类组按完整卡数核对源码生成器；不增加被删除的六类组合组图表入口。单卡组没有跨卡连线。
+6. 三个通信阶段为独立复选框；覆盖默认仅前向、仅反向、仅参数更新、多选和全不选，连线与固定/悬停列表一致过滤。前向蓝色、反向红色、更新绿色，多选重叠路径仍可区分；取消阶段不改变模块配色。
+7. PP=3 及层分布 `[3,5,4]` 默认展开 stage 0/2，stage 1 摘要标出 L4～L8；ranks 不因折叠重编号，首尾 stage 不画成直接相邻通信。用户选择 stage 1 后才展开，其颜色明度与展开前一致。
+8. 大规模样例 `总卡数=4096, TP=8, CP=2, PP=8, EP=8, 专家数=64, 层分布=[4,6,8,10,12,10,8,6]` 得到总层数 64、DP=32、专家副本数=8、重复块跨度=8、重复块数量=8；复制块折叠后的完整基础图为 512 张卡。默认只展开 stage 0/7，各 64 张，共 128 张/256 个模块；中间 stage 各自保留 layer 范围。展开全部 stage 时再按预算切片。
+9. stage 省略与复制块折叠不改变 group 成员、模块权重集合身份或 PP stride；隐藏对象均有明确的展开/定位入口，悬停不会自动展开。专家集合通过 MoE 块内完整索引范围表达。
+10. PP=1 时首尾只显示一次，PP=2 时两者都展开；PP 改变后 stage 选择仍有效。各 stage 共用色系，明度随实际 PP rank 增大单调加深，不能按可见 stage 重算；最浅彩色不与非本地灰区混淆。
+11. 直接打开最终 HTML 检查桌面/窄屏布局、鼠标悬停、固定详情、键盘与触屏、stage 展开、通信彩色连线及缩放；本轮文档阶段不将这些功能宣称为已经实现。
+分组、非均匀 PP 层偏移、两种扩展模式的专家编号和 4096 卡样例的数值，已在此前修订中通过隔离执行源码函数核对；通信语义依据第 10 节调用链。本版更新显示编码、TP 方案建议及 stage 选择，不改变初始化算法；相应章节、样例与验收标准同步修订。功能 HTML、SVG 交互和训练运行验证尚未执行。
